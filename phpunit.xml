@@ -5,6 +5,11 @@
          processIsolation="false"
          stopOnFailure="false"
 >
+    <source>
+        <include>
+            <directory suffix=".php">./src/Lalalili/ShoppingCart</directory>
+        </include>
+    </source>
     <testsuites>
         <testsuite name="Package Test Suite">
             <directory suffix="Test.php">./tests/</directory>

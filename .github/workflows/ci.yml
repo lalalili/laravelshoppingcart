@@ -1,10 +1,12 @@
-name: LaravelShoppingCart Tests
+name: LaravelShoppingCart CI
 
 on:
   push:
     paths:
       - 'src/**'
       - 'tests/**'
+      - 'benchmarks/**'
+      - 'tools/**'
       - 'composer.json'
       - 'phpunit.xml'
       - 'phpstan.neon.dist'
@@ -14,6 +16,8 @@ on:
     paths:
       - 'src/**'
       - 'tests/**'
+      - 'benchmarks/**'
+      - 'tools/**'
       - 'composer.json'
       - 'phpunit.xml'
       - 'phpstan.neon.dist'
@@ -22,18 +26,23 @@ on:
 
 jobs:
   package-quality:
+    name: ${{ matrix.check_name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         include:
-          - php: '8.3'
+          - check_name: ci-php83-l11
+            php: '8.3'
             testbench: '^9.0'
-          - php: '8.4'
-            testbench: '^9.0'
-          - php: '8.3'
+          - check_name: ci-php83-l12
+            php: '8.3'
             testbench: '^10.0'
-          - php: '8.4'
+          - check_name: ci-php84-l11
+            php: '8.4'
+            testbench: '^9.0'
+          - check_name: ci-php84-l12
+            php: '8.4'
             testbench: '^10.0'
 
     steps:
@@ -57,3 +66,38 @@ jobs:
 
       - name: Run static analysis
         run: composer analyse
+
+      - name: Run Pest smoke tests
+        run: composer test:pest
+
+  coverage-gate:
+    name: coverage-gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with xdebug
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: xdebug
+
+      - name: Pin Testbench for Laravel 12
+        run: composer require --dev "orchestra/testbench:^10.0" --no-update --no-interaction
+
+      - name: Install package dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Generate coverage report
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --configuration=phpunit.xml --coverage-clover build/clover.xml
+
+      - name: Verify coverage threshold
+        run: composer coverage:check
+
+      - name: Upload clover report
+        uses: actions/upload-artifact@v4
+        with:
+          name: clover-report
+          path: build/clover.xml

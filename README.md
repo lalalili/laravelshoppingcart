@@ -41,13 +41,21 @@ $total = ShoppingCartFacade::session('user-1')->getTotal();
 
 v13 uses `lalalili_shopping_cart` config key.
 
-Example:
-
 ```php
 config('lalalili_shopping_cart.decimals');
 ```
 
-## Breaking changes in v13
+## v13.x compatibility promise
+
+- `v13.x` is **non-breaking only**.
+- Existing public API names stay stable in v13:
+  - Facade: `ShoppingCartFacade`
+  - Service provider: `ShoppingCartServiceProvider`
+  - Container key: `shopping_cart`
+  - Config key: `lalalili_shopping_cart`
+- Breaking changes are deferred to `v14`.
+
+## Breaking changes in v13.0.0
 
 - Namespace changed from `Darryldecode\\Cart\\*` to `Lalalili\\ShoppingCart\\*`.
 - Facade changed from `CartFacade` to `ShoppingCartFacade`.
@@ -57,17 +65,35 @@ config('lalalili_shopping_cart.decimals');
 - Config publish target changed from `shopping_cart.php` to `lalalili_shopping_cart.php`.
 - No legacy class aliases are provided.
 
-## Testing
+## Testing and quality
 
 ```bash
 composer test
-```
-
-## Static analysis
-
-```bash
+composer test:pest
 composer analyse
 ```
+
+## Benchmark
+
+```bash
+composer bench
+```
+
+Latest local benchmark baseline (`v13.x`, PHP 8.4, synthetic data):
+
+| Items | Add (ms) | Update (ms) | getTotal x10 (ms) | Peak memory (MB) |
+| --- | ---: | ---: | ---: | ---: |
+| 100 | 37.79 | 0.36 | 1.93 | 4.00 |
+| 1,000 | 87.80 | 2.98 | 15.57 | 4.00 |
+| 10,000 | 870.79 | 29.15 | 164.92 | 12.00 |
+
+## Release flow
+
+Release checklist is available at `.github/ISSUE_TEMPLATE/release-checklist.md`.
+
+Standard flow:
+
+`milestone close -> tag -> release -> packagist ping -> smoke check`
 
 ## License
 

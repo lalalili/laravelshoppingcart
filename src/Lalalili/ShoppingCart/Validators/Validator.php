@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lalalili\ShoppingCart\Validators;
 
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Factory;
@@ -26,6 +27,7 @@ abstract class Validator
         if (function_exists('app') && app()->bound('validator')) {
             /** @var mixed $validatorFactory */
             $validatorFactory = app('validator');
+
             if ($validatorFactory instanceof Factory) {
                 static::$factory = $validatorFactory;
 
@@ -39,12 +41,18 @@ abstract class Validator
         return static::$factory;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, string|array<int, string>> $rules
+     * @param array<string, string> $messages
+     * @param array<string, string> $customAttributes
+     */
     public static function make(
         array $data,
         array $rules,
         array $messages = [],
         array $customAttributes = []
-    ): \Illuminate\Contracts\Validation\Validator {
+    ): ValidatorContract {
         return static::instance()->make($data, $rules, $messages, $customAttributes);
     }
 }

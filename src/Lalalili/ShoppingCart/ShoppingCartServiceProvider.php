@@ -7,6 +7,9 @@ namespace Lalalili\ShoppingCart;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * @phpstan-type CartConfig array<string, mixed>
+ */
 class ShoppingCartServiceProvider extends ServiceProvider
 {
     public function boot(): void
@@ -26,15 +29,18 @@ class ShoppingCartServiceProvider extends ServiceProvider
             $storageClass = config('lalalili_shopping_cart.storage');
             $eventsClass = config('lalalili_shopping_cart.events');
 
-            $storage = is_string($storageClass) && $storageClass !== '' ? new $storageClass() : $app['session'];
-            $events = is_string($eventsClass) && $eventsClass !== '' ? new $eventsClass() : $app['events'];
+            $storage = is_string($storageClass) && $storageClass !== '' ? new $storageClass() : $app->make('session');
+            $events = is_string($eventsClass) && $eventsClass !== '' ? new $eventsClass() : $app->make('events');
+
+            /** @var CartConfig $config */
+            $config = config('lalalili_shopping_cart', []);
 
             return new Cart(
                 $storage,
                 $events,
                 'shopping_cart',
                 '4yTlTDKu3oJOfzD',
-                config('lalalili_shopping_cart', [])
+                $config
             );
         });
     }

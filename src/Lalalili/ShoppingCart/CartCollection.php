@@ -6,6 +6,9 @@ namespace Lalalili\ShoppingCart;
 
 use Illuminate\Support\Collection;
 
+/**
+ * @extends Collection<int|string, ItemCollection>
+ */
 class CartCollection extends Collection
 {
 }

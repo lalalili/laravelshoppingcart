@@ -1,5 +1,8 @@
 parameters:
-    level: 5
+    level: 8
     paths:
         - src
+    treatPhpDocTypesAsCertain: false
+    excludePaths:
+        - src/Lalalili/ShoppingCart/config/lalalili_shopping_cart.php
     tmpDir: .phpstan

@@ -9,96 +9,83 @@ use Lalalili\ShoppingCart\Helpers\Helpers;
 use Lalalili\ShoppingCart\Validators\CartConditionValidator;
 
 /**
- * Created by PhpStorm.
- * User: darryl
- * Date: 1/15/2015
- * Time: 9:02 PM
+ * @phpstan-type ConditionData array{
+ *   name: string,
+ *   type: string,
+ *   value: int|float|string,
+ *   target?: string,
+ *   order?: int|numeric-string,
+ *   attributes?: array<string, mixed>
+ * }
  */
-
 class CartCondition
 {
     /**
-     * @var array
+     * @var ConditionData
      */
     private array $args;
 
-    /**
-     * The parsed raw value of the condition.
-     */
     public float $parsedRawValue = 0.0;
 
     /**
-     * @param array $args (name, type, target, value)
+     * @param array<string, mixed> $args
      * @throws InvalidConditionException
      */
     public function __construct(array $args)
     {
-        $this->args = $args;
-
         if (Helpers::isMultiArray($args)) {
             throw new InvalidConditionException('Multi dimensional array is not supported.');
-        } else {
-            $this->validate($this->args);
         }
+
+        $this->validate($args);
+
+        $rawValue = $args['value'] ?? '';
+
+        /** @var ConditionData $conditionData */
+        $conditionData = [
+            'name' => Helpers::toString($args['name'] ?? ''),
+            'type' => Helpers::toString($args['type'] ?? ''),
+            'value' => is_int($rawValue) || is_float($rawValue) || is_string($rawValue)
+                ? $rawValue
+                : Helpers::toString($rawValue),
+            'target' => Helpers::toString($args['target'] ?? ''),
+            'order' => Helpers::toInt($args['order'] ?? 0),
+            'attributes' => isset($args['attributes']) && is_array($args['attributes']) ? $args['attributes'] : [],
+        ];
+
+        $this->args = $conditionData;
     }
 
-    /**
-     * the target of where the condition is applied.
-     * NOTE: On conditions added to per item bases, target is not needed.
-     *
-     * @return mixed
-     */
-    public function getTarget()
+    public function getTarget(): string
     {
-        return (isset($this->args['target'])) ? $this->args['target'] : '';
+        return (string) ($this->args['target'] ?? '');
     }
 
-    /**
-     * the name of the condition
-     *
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->args['name'];
     }
 
-    /**
-     * the type of the condition
-     *
-     * @return mixed
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->args['type'];
     }
 
     /**
-     * get the additional attributes of a condition
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
-        return (isset($this->args['attributes'])) ? $this->args['attributes'] : array();
+        $attributes = $this->args['attributes'] ?? [];
+
+        return is_array($attributes) ? $attributes : [];
     }
 
-    /**
-     * the value of this the condition
-     *
-     * @return mixed
-     */
-    public function getValue()
+    public function getValue(): int|float|string
     {
         return $this->args['value'];
     }
 
-    /**
-     * Set the order to apply this condition. If no argument order is applied we return 0 as
-     * indicator that no assignment has been made
-     * @param int $order
-     * @return $this
-     */
     public function setOrder(int $order = 1): self
     {
         $this->args['order'] = $order;
@@ -106,156 +93,85 @@ class CartCondition
         return $this;
     }
 
-    /**
-     * the order to apply this condition. If no argument order is applied we return 0 as
-     * indicator that no assignment has been made
-     *
-     * @return Integer
-     */
-    public function getOrder()
+    public function getOrder(): int
     {
-        return isset($this->args['order']) && is_numeric($this->args['order']) ? (int)$this->args['order'] : 0;
+        return isset($this->args['order']) && is_numeric((string) $this->args['order'])
+            ? (int) $this->args['order']
+            : 0;
     }
 
-    /**
-     * apply condition to total or subtotal
-     *
-     * @param $totalOrSubTotalOrPrice
-     * @return float
-     */
-    public function applyCondition($totalOrSubTotalOrPrice)
+    public function applyCondition(mixed $totalOrSubTotalOrPrice): float
     {
         return $this->apply($totalOrSubTotalOrPrice, $this->getValue());
     }
 
-    /**
-     * get the calculated value of this condition supplied by the subtotal|price
-     *
-     * @param $totalOrSubTotalOrPrice
-     * @return mixed
-     */
-    public function getCalculatedValue($totalOrSubTotalOrPrice)
+    public function getCalculatedValue(mixed $totalOrSubTotalOrPrice): float
     {
         $this->apply($totalOrSubTotalOrPrice, $this->getValue());
 
         return $this->parsedRawValue;
     }
 
-    /**
-     * apply condition
-     *
-     * @param $totalOrSubTotalOrPrice
-     * @param $conditionValue
-     * @return float
-     */
-    protected function apply($totalOrSubTotalOrPrice, $conditionValue)
+    protected function apply(mixed $totalOrSubTotalOrPrice, mixed $conditionValue): float
     {
-        // if value has a percentage sign on it, we will get first
-        // its percentage then we will evaluate again if the value
-        // has a minus or plus sign so we can decide what to do with the
-        // percentage, whether to add or subtract it to the total/subtotal/price
-        // if we can't find any plus/minus sign, we will assume it as plus sign
-        if ($this->valueIsPercentage($conditionValue)) {
-            if ($this->valueIsToBeSubtracted($conditionValue)) {
-                $value = Helpers::normalizePrice($this->cleanValue($conditionValue));
+        $baseAmount = Helpers::toFloat($totalOrSubTotalOrPrice);
+        $normalizedConditionValue = Helpers::toString($conditionValue);
 
-                $this->parsedRawValue = $totalOrSubTotalOrPrice * ($value / 100);
+        if ($this->valueIsPercentage($normalizedConditionValue)) {
+            $percent = Helpers::toFloat(Helpers::normalizePrice($this->cleanValue($normalizedConditionValue)));
+            $this->parsedRawValue = $baseAmount * ($percent / 100);
 
-                $result = floatval($totalOrSubTotalOrPrice - $this->parsedRawValue);
-            } elseif ($this->valueIsToBeAdded($conditionValue)) {
-                $value = Helpers::normalizePrice($this->cleanValue($conditionValue));
-
-                $this->parsedRawValue = $totalOrSubTotalOrPrice * ($value / 100);
-
-                $result = floatval($totalOrSubTotalOrPrice + $this->parsedRawValue);
+            if ($this->valueIsToBeSubtracted($normalizedConditionValue)) {
+                $result = $baseAmount - $this->parsedRawValue;
             } else {
-                $value = Helpers::normalizePrice($conditionValue);
-
-                $this->parsedRawValue = $totalOrSubTotalOrPrice * ($value / 100);
-
-                $result = floatval($totalOrSubTotalOrPrice + $this->parsedRawValue);
+                $result = $baseAmount + $this->parsedRawValue;
             }
+
+            return $result < 0 ? 0.0 : (float) $result;
         }
 
-        // if the value has no percent sign on it, the operation will not be a percentage
-        // next is we will check if it has a minus/plus sign so then we can just deduct it to total/subtotal/price
-        else {
-            if ($this->valueIsToBeSubtracted($conditionValue)) {
-                $this->parsedRawValue = Helpers::normalizePrice($this->cleanValue($conditionValue));
+        $this->parsedRawValue = Helpers::toFloat(Helpers::normalizePrice($this->cleanValue($normalizedConditionValue)));
 
-                $result = floatval($totalOrSubTotalOrPrice - $this->parsedRawValue);
-            } elseif ($this->valueIsToBeAdded($conditionValue)) {
-                $this->parsedRawValue = Helpers::normalizePrice($this->cleanValue($conditionValue));
-
-                $result = floatval($totalOrSubTotalOrPrice + $this->parsedRawValue);
-            } else {
-                $this->parsedRawValue = Helpers::normalizePrice($conditionValue);
-
-                $result = floatval($totalOrSubTotalOrPrice + $this->parsedRawValue);
-            }
+        if ($this->valueIsToBeSubtracted($normalizedConditionValue)) {
+            $result = $baseAmount - $this->parsedRawValue;
+        } else {
+            $result = $baseAmount + $this->parsedRawValue;
         }
 
-        // Do not allow items with negative prices.
-        return $result < 0 ? 0.00 : $result;
+        return $result < 0 ? 0.0 : (float) $result;
     }
 
-    /**
-     * check if value is a percentage
-     *
-     * @param $value
-     * @return bool
-     */
-    protected function valueIsPercentage($value)
+    protected function valueIsPercentage(string $value): bool
     {
-        return (preg_match('/%/', $value) == 1);
+        return preg_match('/%/', $value) === 1;
     }
 
-    /**
-     * check if value is a subtract
-     *
-     * @param $value
-     * @return bool
-     */
-    protected function valueIsToBeSubtracted($value)
+    protected function valueIsToBeSubtracted(string $value): bool
     {
-        return (preg_match('/\-/', $value) == 1);
+        return preg_match('/\-/', $value) === 1;
     }
 
-    /**
-     * check if value is to be added
-     *
-     * @param $value
-     * @return bool
-     */
-    protected function valueIsToBeAdded($value)
+    protected function valueIsToBeAdded(string $value): bool
     {
-        return (preg_match('/\+/', $value) == 1);
+        return preg_match('/\+/', $value) === 1;
     }
 
-    /**
-     * removes some arithmetic signs (%,+,-) only
-     *
-     * @param $value
-     * @return mixed
-     */
-    protected function cleanValue($value)
+    protected function cleanValue(string $value): string
     {
-        return str_replace(array('%','-','+'), '', $value);
+        return str_replace(['%', '-', '+'], '', $value);
     }
 
     /**
-     * validates condition arguments
-     *
-     * @param $args
+     * @param array<string, mixed> $args
      * @throws InvalidConditionException
      */
-    protected function validate($args)
+    protected function validate(array $args): void
     {
-        $rules = array(
-            'name'  => 'required',
-            'type'  => 'required',
+        $rules = [
+            'name' => 'required',
+            'type' => 'required',
             'value' => 'required',
-        );
+        ];
 
         $validator = CartConditionValidator::make($args, $rules);
 

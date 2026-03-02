@@ -49,6 +49,14 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(100.99, $this->cart->getContent()->first()['price'], 'Item added has price of 100.99 so first content price should be 100.99');
     }
 
+    public function test_cart_has_checks_item_presence()
+    {
+        $this->cart->add(455, 'Sample Item', 100.99, 2, array());
+
+        $this->assertTrue($this->cart->has(455), 'Cart should contain item with id 455');
+        $this->assertFalse($this->cart->has(999), 'Cart should not contain unknown item id');
+    }
+
     public function test_cart_can_add_items_as_array()
     {
         $item = array(

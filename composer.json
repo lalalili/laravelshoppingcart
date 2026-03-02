@@ -29,6 +29,7 @@
     "require-dev": {
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^9.0|^10.0",
+        "pestphp/pest": "^4.0",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5|^12.0"
     },
@@ -56,9 +57,17 @@
     },
     "scripts": {
         "test": "phpunit --configuration=phpunit.xml",
-        "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress"
+        "test:integration": "phpunit --configuration=phpunit.xml --filter=Integration",
+        "test:pest": "pest --colors=always",
+        "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress",
+        "analyse:max": "phpstan analyse src --level=max --no-progress",
+        "bench": "php benchmarks/cart_benchmark.php",
+        "coverage:check": "php tools/check_coverage.php build/clover.xml 85"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }

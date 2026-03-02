@@ -4,125 +4,122 @@ declare(strict_types=1);
 
 namespace Lalalili\ShoppingCart;
 
-/**
- * Created by PhpStorm.
- * User: darryl
- * Date: 1/17/2015
- * Time: 11:03 AM
- */
-
-use Lalalili\ShoppingCart\Helpers\Helpers;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
+use Lalalili\ShoppingCart\Helpers\Helpers;
 
+/**
+ * @extends Collection<string, mixed>
+ */
 class ItemCollection extends Collection
 {
     /**
-     * Sets the config parameters.
-     *
      * @var array<string, mixed>
      */
     protected array $config;
 
     /**
-     * ItemCollection constructor.
-     * @param array|mixed $items
-     * @param $config
+     * @param Arrayable<string, mixed>|iterable<string, mixed>|null $items
+     * @param array<string, mixed> $config
      */
-    public function __construct(mixed $items, array $config = [])
+    public function __construct(Arrayable|iterable|null $items, array $config = [])
     {
-        parent::__construct($items);
+        parent::__construct($items ?? []);
 
         $this->config = $config;
     }
 
-    /**
-     * get the sum of price
-     *
-     * @return float|int|string
-     */
-    public function getPriceSum()
+    public function getPriceSum(): float|int|string
     {
-        $price = (float) $this->get('price');
-        $quantity = (float) $this->get('quantity');
+        $price = Helpers::toFloat($this->get('price'));
+        $quantity = Helpers::toFloat($this->get('quantity'));
 
-        return Helpers::formatValue($price * $quantity, (bool) ($this->config['format_numbers'] ?? false), $this->config);
+        return Helpers::formatValue(
+            $price * $quantity,
+            (bool) ($this->config['format_numbers'] ?? false),
+            $this->config
+        );
     }
 
-    public function __get($name)
+    public function __get($name): mixed
     {
-        if ($this->has($name) || $name == 'model') {
-            return !is_null($this->get($name)) ? $this->get($name) : $this->getAssociatedModel();
+        if ($this->has($name) || $name === 'model') {
+            return $this->get($name) ?? $this->getAssociatedModel();
         }
+
         return null;
     }
 
-    /**
-     * return the associated model of an item
-     *
-     * @return mixed|null
-     */
-    protected function getAssociatedModel()
+    protected function getAssociatedModel(): mixed
     {
         if (!$this->has('associatedModel')) {
             return null;
         }
 
         $associatedModel = $this->get('associatedModel');
+        $id = $this->get('id');
 
-        return (new $associatedModel())->find($this->get('id'));
+        if (!is_string($associatedModel) || !class_exists($associatedModel)) {
+            return null;
+        }
+
+        $model = new $associatedModel();
+
+        if (!method_exists($model, 'find')) {
+            return null;
+        }
+
+        return $model->find($id);
     }
 
-    /**
-     * check if item has conditions
-     *
-     * @return bool
-     */
-    public function hasConditions()
+    public function hasConditions(): bool
     {
-        if (!isset($this['conditions'])) {
+        if (!$this->has('conditions')) {
             return false;
         }
-        if (is_array($this['conditions'])) {
-            return count($this['conditions']) > 0;
-        }
-        $conditionInstance = "Lalalili\\ShoppingCart\\CartCondition";
-        if ($this['conditions'] instanceof $conditionInstance) {
-            return true;
+
+        $conditions = $this->get('conditions');
+
+        if (is_array($conditions)) {
+            return count($conditions) > 0;
         }
 
-        return false;
+        return $conditions instanceof CartCondition;
     }
 
     /**
-     * check if item has conditions
-     *
-     * @return mixed|null
+     * @return CartCondition|array<int, CartCondition>
      */
-    public function getConditions()
+    public function getConditions(): CartCondition|array
     {
         if (!$this->hasConditions()) {
             return [];
         }
-        return $this['conditions'];
+
+        $conditions = $this->get('conditions');
+
+        if ($conditions instanceof CartCondition) {
+            return $conditions;
+        }
+
+        return array_values(array_filter(
+            is_array($conditions) ? $conditions : [],
+            static fn (mixed $condition): bool => $condition instanceof CartCondition
+        ));
     }
 
-    /**
-     * get the single price in which conditions are already applied
-     * @param bool $formatted
-     * @return float|int|string
-     */
-    public function getPriceWithConditions($formatted = true)
+    public function getPriceWithConditions(bool $formatted = true): float|int|string
     {
-        $originalPrice = (float) $this->get('price');
+        $originalPrice = Helpers::toFloat($this->get('price'));
         $newPrice = 0.00;
         $processed = 0;
 
         if ($this->hasConditions()) {
-            $conditions = $this->get('conditions');
+            $conditions = $this->getConditions();
 
             if (is_array($conditions)) {
                 foreach ($conditions as $condition) {
-                    ($processed > 0) ? $toBeCalculated = $newPrice : $toBeCalculated = $originalPrice;
+                    $toBeCalculated = $processed > 0 ? $newPrice : $originalPrice;
                     $newPrice = $condition->applyCondition($toBeCalculated);
                     $processed++;
                 }
@@ -130,20 +127,20 @@ class ItemCollection extends Collection
                 $newPrice = $conditions->applyCondition($originalPrice);
             }
 
-            return Helpers::formatValue($newPrice, $formatted, $this->config);
+            return Helpers::formatValue($newPrice, (bool) $formatted, $this->config);
         }
-        return Helpers::formatValue($originalPrice, $formatted, $this->config);
+
+        return Helpers::formatValue($originalPrice, (bool) $formatted, $this->config);
     }
 
-    /**
-     * get the sum of price in which conditions are already applied
-     * @param bool $formatted
-     * @return float|int|string
-     */
-    public function getPriceSumWithConditions($formatted = true)
+    public function getPriceSumWithConditions(bool $formatted = true): float|int|string
     {
-        $quantity = (float) $this->get('quantity');
+        $quantity = Helpers::toFloat($this->get('quantity'));
 
-        return Helpers::formatValue($this->getPriceWithConditions(false) * $quantity, $formatted, $this->config);
+        return Helpers::formatValue(
+            (float) $this->getPriceWithConditions(false) * $quantity,
+            (bool) $formatted,
+            $this->config
+        );
     }
 }

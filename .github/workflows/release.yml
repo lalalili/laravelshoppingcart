@@ -21,11 +21,20 @@ jobs:
           php-version: '8.4'
           coverage: none
 
+      - name: Pin Testbench for Laravel 12
+        run: composer require --dev "orchestra/testbench:^10.0" --no-update --no-interaction
+
       - name: Install package dependencies
         run: composer update --prefer-dist --no-interaction --no-progress
 
       - name: Run package tests
         run: composer test
+
+      - name: Run static analysis
+        run: composer analyse
+
+      - name: Run benchmark smoke
+        run: composer bench
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
