@@ -381,7 +381,7 @@ class Cart
      */
     public function getCondition($conditionName): ?CartCondition
     {
-        $condition = $this->getConditions()->get($conditionName);
+        $condition = $this->getConditions()->get((string) $conditionName);
 
         return $condition instanceof CartCondition ? $condition : null;
     }
