@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: darryl
@@ -6,8 +7,8 @@
  * Time: 10:23 PM
  */
 
-class SessionMock {
-
+class SessionMock
+{
     protected $session = array();
 
     public function has($key)

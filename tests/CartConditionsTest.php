@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: darryl
@@ -6,16 +7,16 @@
  * Time: 9:59 PM
  */
 
-use Darryldecode\Cart\Cart;
-use Darryldecode\Cart\CartCondition;
+use Lalalili\ShoppingCart\Cart;
+use Lalalili\ShoppingCart\CartCondition;
 use Mockery as m;
 
 require_once __DIR__.'/helpers/SessionMock.php';
 
-class CartConditionTest extends PHPUnit\Framework\TestCase  {
-
+class CartConditionsTest extends PHPUnit\Framework\TestCase
+{
     /**
-     * @var Darryldecode\Cart\Cart
+     * @var Lalalili\ShoppingCart\Cart
      */
     protected $cart;
 
@@ -29,7 +30,7 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
             $events,
             'shopping',
             'SAMPLESESSIONKEY',
-             require(__DIR__.'/helpers/configMock.php')
+            require(__DIR__.'/helpers/configMock.php')
         );
     }
 
@@ -44,19 +45,19 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // add condition to subtotal
         $condition = new CartCondition(array(
-            'name' => 'VAT 12.5%',
-            'type' => 'tax',
+            'name'   => 'VAT 12.5%',
+            'type'   => 'tax',
             'target' => 'subtotal',
-            'value' => '-5',
+            'value'  => '-5',
         ));
 
         $this->cart->condition($condition);
 
-        $this->assertEquals(182.49,$this->cart->getSubTotal());
+        $this->assertEquals(182.49, $this->cart->getSubTotal());
 
         // the total is also should be the same with sub total since our getTotal
         // also depends on what is the value of subtotal
-        $this->assertEquals(182.49,$this->cart->getTotal());
+        $this->assertEquals(182.49, $this->cart->getTotal());
     }
 
     public function test_total_without_condition()
@@ -80,10 +81,10 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // add condition
         $condition = new CartCondition(array(
-            'name' => 'VAT 12.5%',
-            'type' => 'tax',
+            'name'   => 'VAT 12.5%',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '12.5%',
+            'value'  => '12.5%',
         ));
 
         $this->cart->condition($condition);
@@ -104,16 +105,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // add condition
         $condition1 = new CartCondition(array(
-            'name' => 'VAT 12.5%',
-            'type' => 'tax',
+            'name'   => 'VAT 12.5%',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '12.5%',
+            'value'  => '12.5%',
         ));
         $condition2 = new CartCondition(array(
-            'name' => 'Express Shipping $15',
-            'type' => 'shipping',
+            'name'   => 'Express Shipping $15',
+            'type'   => 'shipping',
             'target' => 'total',
-            'value' => '+15',
+            'value'  => '+15',
         ));
 
         $this->cart->condition($condition1);
@@ -135,16 +136,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // add condition
         $condition1 = new CartCondition(array(
-            'name' => 'VAT 12.5%',
-            'type' => 'tax',
+            'name'   => 'VAT 12.5%',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '12.5%',
+            'value'  => '12.5%',
         ));
         $condition2 = new CartCondition(array(
-            'name' => 'Express Shipping $15',
-            'type' => 'shipping',
+            'name'   => 'Express Shipping $15',
+            'type'   => 'shipping',
             'target' => 'total',
-            'value' => '-15',
+            'value'  => '-15',
         ));
 
         $this->cart->condition($condition1);
@@ -166,16 +167,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // add condition
         $condition1 = new CartCondition(array(
-            'name' => 'VAT 12.5%',
-            'type' => 'tax',
+            'name'   => 'VAT 12.5%',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '-12.5%',
+            'value'  => '-12.5%',
         ));
         $condition2 = new CartCondition(array(
-            'name' => 'Express Shipping $15',
-            'type' => 'shipping',
+            'name'   => 'Express Shipping $15',
+            'type'   => 'shipping',
             'target' => 'total',
-            'value' => '-15',
+            'value'  => '-15',
         ));
 
         $this->cart->condition($condition1);
@@ -197,16 +198,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // add condition
         $condition1 = new CartCondition(array(
-            'name' => 'VAT 12.5%',
-            'type' => 'tax',
+            'name'   => 'VAT 12.5%',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '-12.5%',
+            'value'  => '-12.5%',
         ));
         $condition2 = new CartCondition(array(
-            'name' => 'Express Shipping $15',
-            'type' => 'shipping',
+            'name'   => 'Express Shipping $15',
+            'type'   => 'shipping',
             'target' => 'total',
-            'value' => '-15',
+            'value'  => '-15',
         ));
 
         $this->cart->condition([$condition1,$condition2]);
@@ -227,16 +228,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // add condition
         $condition1 = new CartCondition(array(
-            'name' => 'COUPON LESS 12.5%',
-            'type' => 'tax',
+            'name'   => 'COUPON LESS 12.5%',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '-12.5%',
+            'value'  => '-12.5%',
         ));
         $condition2 = new CartCondition(array(
-            'name' => 'Express Shipping $15',
-            'type' => 'shipping',
+            'name'   => 'Express Shipping $15',
+            'type'   => 'shipping',
             'target' => 'total',
-            'value' => '+15',
+            'value'  => '+15',
         ));
 
         $this->cart->condition($condition1);
@@ -253,16 +254,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_add_item_with_condition()
     {
         $condition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'tax',
+            'name'  => 'SALE 5%',
+            'type'  => 'tax',
             'value' => '-5%',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
             'conditions' => $condition1
         );
@@ -276,26 +277,26 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_add_item_with_multiple_item_conditions_in_multiple_condition_instance()
     {
         $itemCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'  => 'SALE 5%',
+            'type'  => 'sale',
             'value' => '-5%',
         ));
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'  => 'Item Gift Pack 25.00',
+            'type'  => 'promo',
             'value' => '-25',
         ));
         $itemCondition3 = new CartCondition(array(
-            'name' => 'MISC',
-            'type' => 'misc',
+            'name'  => 'MISC',
+            'type'  => 'misc',
             'value' => '+10',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
             'conditions' => [$itemCondition1, $itemCondition2, $itemCondition3]
         );
@@ -315,21 +316,21 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
         // have a value of item
 
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'  => 'Item Gift Pack 25.00',
+            'type'  => 'promo',
             'value' => '-25',
         ));
         $itemCondition3 = new CartCondition(array(
-            'name' => 'MISC',
-            'type' => 'misc',
+            'name'  => 'MISC',
+            'type'  => 'misc',
             'value' => '+10',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
             'conditions' => [$itemCondition2, $itemCondition3]
         );
@@ -343,21 +344,21 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_add_item_condition()
     {
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'  => 'Item Gift Pack 25.00',
+            'type'  => 'promo',
             'value' => '-25',
         ));
         $coupon101 = new CartCondition(array(
-            'name' => 'COUPON 101',
-            'type' => 'coupon',
+            'name'  => 'COUPON 101',
+            'type'  => 'coupon',
             'value' => '-5%',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
             'conditions' => [$itemCondition2]
         );
@@ -376,16 +377,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_add_item_condition_restrict_negative_price()
     {
         $condition = new CartCondition([
-            'name' => 'Substract amount but prevent negative value',
-            'type' => 'promo',
+            'name'  => 'Substract amount but prevent negative value',
+            'type'  => 'promo',
             'value' => '-25',
         ]);
 
         $item = [
-            'id' => 789,
-            'name' => 'Sample Item 1',
-            'price' => 20,
-            'quantity' => 1,
+            'id'         => 789,
+            'name'       => 'Sample Item 1',
+            'price'      => 20,
+            'quantity'   => 1,
             'attributes' => [],
             'conditions' => [
                 $condition,
@@ -402,23 +403,23 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_get_cart_condition_by_condition_name()
     {
         $itemCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
+            'value'  => '-5%',
         ));
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 25.00',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
+            'value'  => '-25',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -438,23 +439,23 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_remove_cart_condition_by_condition_name()
     {
         $itemCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
+            'value'  => '-5%',
         ));
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 25.00',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
+            'value'  => '-25',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -476,21 +477,21 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_remove_item_condition_by_condition_name()
     {
         $itemCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'  => 'SALE 5%',
+            'type'  => 'sale',
             'value' => '-5%',
         ));
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'  => 'Item Gift Pack 25.00',
+            'type'  => 'promo',
             'value' => '-25',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
             'conditions' => [$itemCondition1, $itemCondition2]
         );
@@ -498,13 +499,13 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
         $this->cart->add($item);
 
         // let's very first the item has 2 conditions in it
-        $this->assertCount(2,$this->cart->get(456)['conditions'], 'Item should have two conditions');
+        $this->assertCount(2, $this->cart->get(456)['conditions'], 'Item should have two conditions');
 
         // now let's remove a condition on that item using the condition name
         $this->cart->removeItemCondition(456, 'SALE 5%');
 
         // now we should have only 1 condition left on that item
-        $this->assertCount(1,$this->cart->get(456)['conditions'], 'Item should have one condition left');
+        $this->assertCount(1, $this->cart->get(456)['conditions'], 'Item should have one condition left');
     }
 
     public function test_remove_item_condition_by_condition_name_scenario_two()
@@ -512,16 +513,16 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
         // NOTE: in this scenario, we will add the conditions not in array format
 
         $itemCondition = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'  => 'SALE 5%',
+            'type'  => 'sale',
             'value' => '-5%',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
             'conditions' => $itemCondition // <--not in array format
         );
@@ -541,21 +542,21 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_clear_item_conditions()
     {
         $itemCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'  => 'SALE 5%',
+            'type'  => 'sale',
             'value' => '-5%',
         ));
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'  => 'Item Gift Pack 25.00',
+            'type'  => 'promo',
             'value' => '-25',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
             'conditions' => [$itemCondition1, $itemCondition2]
         );
@@ -579,23 +580,23 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
         // this does not remove conditions on per item bases
 
         $itemCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
+            'value'  => '-5%',
         ));
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 25.00',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
+            'value'  => '-25',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -616,23 +617,23 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_get_calculated_value_of_a_condition()
     {
         $cartCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
+            'value'  => '-5%',
         ));
         $cartCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 25.00',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
+            'value'  => '-25',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -647,41 +648,41 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
         // way 1
         // now we will get the calculated value of the condition 1
         $cond1 = $this->cart->getCondition('SALE 5%');
-        $this->assertEquals(5,$cond1->getCalculatedValue($subTotal), 'The calculated value must be 5');
+        $this->assertEquals(5, $cond1->getCalculatedValue($subTotal), 'The calculated value must be 5');
 
         // way 2
         // get all cart conditions and get their calculated values
         $conditions = $this->cart->getConditions();
-        $this->assertEquals(5, $conditions['SALE 5%']->getCalculatedValue($subTotal),'First condition calculated value must be 5');
-        $this->assertEquals(25, $conditions['Item Gift Pack 25.00']->getCalculatedValue($subTotal),'First condition calculated value must be 5');
+        $this->assertEquals(5, $conditions['SALE 5%']->getCalculatedValue($subTotal), 'First condition calculated value must be 5');
+        $this->assertEquals(25, $conditions['Item Gift Pack 25.00']->getCalculatedValue($subTotal), 'First condition calculated value must be 5');
     }
 
     public function test_get_conditions_by_type()
     {
         $cartCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
+            'value'  => '-5%',
         ));
         $cartCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 25.00',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
+            'value'  => '-25',
         ));
         $cartCondition3 = new CartCondition(array(
-            'name' => 'Item Less 8%',
-            'type' => 'promo',
+            'name'   => 'Item Less 8%',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-8%',
+            'value'  => '-8%',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -706,29 +707,29 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
         // to avoid any issues removing it using remove method: removeCartCondition($conditionName);
 
         $cartCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
+            'value'  => '-5%',
         ));
         $cartCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 20',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 20',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
+            'value'  => '-25',
         ));
         $cartCondition3 = new CartCondition(array(
-            'name' => 'Item Less 8%',
-            'type' => 'promo',
+            'name'   => 'Item Less 8%',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-8%',
+            'value'  => '-8%',
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -745,17 +746,17 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_add_cart_condition_without_condition_attributes()
     {
         $cartCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%'
+            'value'  => '-5%'
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -765,7 +766,7 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // prove first we have now the condition on the cart
         $contition = $this->cart->getCondition("SALE 5%");
-        $this->assertEquals('SALE 5%',$contition->getName());
+        $this->assertEquals('SALE 5%', $contition->getName());
 
         // when get attribute is called and there is no attributes added,
         // it should return an empty array
@@ -776,22 +777,22 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_add_cart_condition_with_condition_attributes()
     {
         $cartCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
-            'target' => 'total',
-            'value' => '-5%',
+            'name'       => 'SALE 5%',
+            'type'       => 'sale',
+            'target'     => 'total',
+            'value'      => '-5%',
             'attributes' => array(
-                'description' => 'october fest promo sale',
+                'description'     => 'october fest promo sale',
                 'sale_start_date' => '2015-01-20',
-                'sale_end_date' => '2015-01-30',
+                'sale_end_date'   => '2015-01-30',
             )
         ));
 
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 100,
-            'quantity' => 1,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 100,
+            'quantity'   => 1,
             'attributes' => array(),
         );
 
@@ -801,42 +802,42 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
 
         // prove first we have now the condition on the cart
         $contition = $this->cart->getCondition("SALE 5%");
-        $this->assertEquals('SALE 5%',$contition->getName());
+        $this->assertEquals('SALE 5%', $contition->getName());
 
         // when get attribute is called and there is no attributes added,
         // it should return an empty array
         $conditionAttributes = $contition->getAttributes();
         $this->assertIsArray($conditionAttributes);
-        $this->assertArrayHasKey('description',$conditionAttributes);
-        $this->assertArrayHasKey('sale_start_date',$conditionAttributes);
-        $this->assertArrayHasKey('sale_end_date',$conditionAttributes);
-        $this->assertEquals('october fest promo sale',$conditionAttributes['description']);
-        $this->assertEquals('2015-01-20',$conditionAttributes['sale_start_date']);
-        $this->assertEquals('2015-01-30',$conditionAttributes['sale_end_date']);
+        $this->assertArrayHasKey('description', $conditionAttributes);
+        $this->assertArrayHasKey('sale_start_date', $conditionAttributes);
+        $this->assertArrayHasKey('sale_end_date', $conditionAttributes);
+        $this->assertEquals('october fest promo sale', $conditionAttributes['description']);
+        $this->assertEquals('2015-01-20', $conditionAttributes['sale_start_date']);
+        $this->assertEquals('2015-01-30', $conditionAttributes['sale_end_date']);
     }
 
     public function test_get_order_from_condition()
     {
         $cartCondition1 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
-            'order' => 2
+            'value'  => '-5%',
+            'order'  => 2
         ));
         $cartCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 20',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 20',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
-            'order' => '3'
+            'value'  => '-25',
+            'order'  => '3'
         ));
         $cartCondition3 = new CartCondition(array(
-            'name' => 'Item Less 8%',
-            'type' => 'tax',
+            'name'   => 'Item Less 8%',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '-8%',
-            'order' => 'first'
+            'value'  => '-8%',
+            'order'  => 'first'
         ));
 
         $this->assertEquals(2, $cartCondition1->getOrder());
@@ -857,25 +858,25 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
     public function test_condition_ordering()
     {
         $cartCondition1 = new CartCondition(array(
-            'name' => 'TAX',
-            'type' => 'tax',
+            'name'   => 'TAX',
+            'type'   => 'tax',
             'target' => 'total',
-            'value' => '-8%',
-            'order' => 5
+            'value'  => '-8%',
+            'order'  => 5
         ));
         $cartCondition2 = new CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'total',
-            'value' => '-5%',
-            'order' => 2
+            'value'  => '-5%',
+            'order'  => 2
         ));
         $cartCondition3 = new CartCondition(array(
-            'name' => 'Item Gift Pack 20',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 20',
+            'type'   => 'promo',
             'target' => 'total',
-            'value' => '-25',
-            'order' => 1
+            'value'  => '-25',
+            'order'  => 1
         ));
 
         $this->fillCart();
@@ -884,32 +885,32 @@ class CartConditionTest extends PHPUnit\Framework\TestCase  {
         $this->cart->condition($cartCondition2);
         $this->cart->condition($cartCondition3);
 
-        $this->assertEquals('Item Gift Pack 20',$this->cart->getConditions()->first()->getName());
-        $this->assertEquals('TAX',$this->cart->getConditions()->last()->getName());
+        $this->assertEquals('Item Gift Pack 20', $this->cart->getConditions()->first()->getName());
+        $this->assertEquals('TAX', $this->cart->getConditions()->last()->getName());
     }
 
     protected function fillCart()
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 1,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 1,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );

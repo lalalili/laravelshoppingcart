@@ -1,4 +1,8 @@
-<?php namespace Darryldecode\Cart;
+<?php
+
+declare(strict_types=1);
+
+namespace Lalalili\ShoppingCart;
 
 /**
  * Created by PhpStorm.
@@ -9,6 +13,6 @@
 
 use Illuminate\Support\Collection;
 
-class CartConditionCollection extends Collection {
-
+class CartConditionCollection extends Collection
+{
 }

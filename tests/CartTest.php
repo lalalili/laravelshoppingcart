@@ -7,17 +7,16 @@
  * Time: 9:59 PM
  */
 
-use Darryldecode\Cart\Cart;
+use Lalalili\ShoppingCart\Cart;
 use Mockery as m;
-use Darryldecode\Tests\helpers\MockProduct;
+use Lalalili\ShoppingCart\Tests\Helpers\MockProduct;
 
 require_once __DIR__ . '/helpers/SessionMock.php';
 
 class CartTest extends PHPUnit\Framework\TestCase
 {
-
     /**
-     * @var Darryldecode\Cart\Cart
+     * @var Lalalili\ShoppingCart\Cart
      */
     protected $cart;
 
@@ -53,10 +52,10 @@ class CartTest extends PHPUnit\Framework\TestCase
     public function test_cart_can_add_items_as_array()
     {
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item',
-            'price' => 67.99,
-            'quantity' => 4,
+            'id'         => 456,
+            'name'       => 'Sample Item',
+            'price'      => 67.99,
+            'quantity'   => 4,
             'attributes' => array()
         );
 
@@ -72,24 +71,24 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 4,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 4,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
         );
@@ -103,9 +102,9 @@ class CartTest extends PHPUnit\Framework\TestCase
     public function test_cart_can_add_item_without_attributes()
     {
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 67.99,
+            'id'       => 456,
+            'name'     => 'Sample Item 1',
+            'price'    => 67.99,
             'quantity' => 4
         );
 
@@ -117,13 +116,13 @@ class CartTest extends PHPUnit\Framework\TestCase
     public function test_cart_update_with_attribute_then_attributes_should_be_still_instance_of_ItemAttributeCollection()
     {
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 67.99,
-            'quantity' => 4,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 67.99,
+            'quantity'   => 4,
             'attributes' => array(
                 'product_id' => '145',
-                'color' => 'red'
+                'color'      => 'red'
             )
         );
         $this->cart->add($item);
@@ -132,30 +131,30 @@ class CartTest extends PHPUnit\Framework\TestCase
         // ItemAttributeCollection
         $item = $this->cart->get(456);
 
-        $this->assertInstanceOf('Darryldecode\Cart\ItemAttributeCollection', $item->attributes);
+        $this->assertInstanceOf('Lalalili\ShoppingCart\ItemAttributeCollection', $item->attributes);
 
         // now lets update the item with its new attributes
         // when we get that item from cart, it should still be an instance of ItemAttributeCollection
         $updatedItem = array(
             'attributes' => array(
                 'product_id' => '145',
-                'color' => 'red'
+                'color'      => 'red'
             )
         );
         $this->cart->update(456, $updatedItem);
 
-        $this->assertInstanceOf('Darryldecode\Cart\ItemAttributeCollection', $item->attributes);
+        $this->assertInstanceOf('Lalalili\ShoppingCart\ItemAttributeCollection', $item->attributes);
     }
 
     public function test_cart_items_attributes()
     {
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item 1',
-            'price' => 67.99,
-            'quantity' => 4,
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 67.99,
+            'quantity'   => 4,
             'attributes' => array(
-                'size' => 'L',
+                'size'  => 'L',
                 'color' => 'blue'
             )
         );
@@ -174,17 +173,17 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
@@ -200,9 +199,9 @@ class CartTest extends PHPUnit\Framework\TestCase
 
         // when cart's item quantity is updated, the subtotal should be updated as well
         $this->cart->update(456, array(
-            'name' => 'Renamed',
+            'name'     => 'Renamed',
             'quantity' => 2,
-            'price' => 105,
+            'price'    => 105,
         ));
 
         $item = $this->cart->get($itemIdToEvaluate);
@@ -215,10 +214,10 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
         );
@@ -252,24 +251,24 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 4,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 4,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
         );
@@ -288,24 +287,24 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 1,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 1,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
@@ -324,53 +323,53 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
 
         $this->cart->add($items);
 
-        $this->assertEquals(273.22, $this->cart->getSubTotal(), 'Cart should have sub total of 273.22');
+        $this->assertEqualsWithDelta(273.22, $this->cart->getSubTotal(), 0.00001, 'Cart should have sub total of 273.22');
 
         // when cart's item quantity is updated, the subtotal should be updated as well
         $this->cart->update(456, array('quantity' => 2));
 
-        $this->assertEquals(409.2, $this->cart->getSubTotal(), 'Cart should have sub total of 409.2');
+        $this->assertEqualsWithDelta(409.2, $this->cart->getSubTotal(), 0.00001, 'Cart should have sub total of 409.2');
     }
 
     public function test_sub_total_when_item_quantity_is_updated_by_reduced()
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
 
         $this->cart->add($items);
 
-        $this->assertEquals(273.22, $this->cart->getSubTotal(), 'Cart should have sub total of 273.22');
+        $this->assertEqualsWithDelta(273.22, $this->cart->getSubTotal(), 0.00001, 'Cart should have sub total of 273.22');
 
         // when cart's item quantity is updated, the subtotal should be updated as well
         $this->cart->update(456, array('quantity' => -1));
@@ -379,24 +378,24 @@ class CartTest extends PHPUnit\Framework\TestCase
         $item = $this->cart->get(456);
 
         $this->assertEquals(2, $item['quantity'], 'Item quantity of with item ID of 456 should now be reduced to 2');
-        $this->assertEquals(205.23, $this->cart->getSubTotal(), 'Cart should have sub total of 205.23');
+        $this->assertEqualsWithDelta(205.23, $this->cart->getSubTotal(), 0.00001, 'Cart should have sub total of 205.23');
     }
 
     public function test_item_quantity_update_by_reduced_should_not_reduce_if_quantity_will_result_to_zero()
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
@@ -418,19 +417,19 @@ class CartTest extends PHPUnit\Framework\TestCase
 
     public function test_should_throw_exception_when_provided_invalid_values_scenario_one()
     {
-        $this->expectException('Darryldecode\Cart\Exceptions\InvalidItemException');
+        $this->expectException('Lalalili\ShoppingCart\Exceptions\InvalidItemException');
         $this->cart->add(455, 'Sample Item', 100.99, 0, array());
     }
 
     public function test_should_throw_exception_when_provided_invalid_values_scenario_two()
     {
-        $this->expectException('Darryldecode\Cart\Exceptions\InvalidItemException');
+        $this->expectException('Lalalili\ShoppingCart\Exceptions\InvalidItemException');
         $this->cart->add('', 'Sample Item', 100.99, 2, array());
     }
 
     public function test_should_throw_exception_when_provided_invalid_values_scenario_three()
     {
-        $this->expectException('Darryldecode\Cart\Exceptions\InvalidItemException');
+        $this->expectException('Lalalili\ShoppingCart\Exceptions\InvalidItemException');
         $this->cart->add(523, '', 100.99, 2, array());
     }
 
@@ -438,17 +437,17 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
@@ -467,17 +466,17 @@ class CartTest extends PHPUnit\Framework\TestCase
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
@@ -494,11 +493,11 @@ class CartTest extends PHPUnit\Framework\TestCase
     public function test_cart_can_add_items_as_array_with_associated_model()
     {
         $item = array(
-            'id' => 456,
-            'name' => 'Sample Item',
-            'price' => 67.99,
-            'quantity' => 4,
-            'attributes' => array(),
+            'id'              => 456,
+            'name'            => 'Sample Item',
+            'price'           => 67.99,
+            'quantity'        => 4,
+            'attributes'      => array(),
             'associatedModel' => MockProduct::class
         );
 
@@ -510,34 +509,34 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(1, $this->cart->getContent()->count(), 'Cart should have 1 item on it');
         $this->assertEquals(456, $this->cart->getContent()->first()['id'], 'The first content must have ID of 456');
         $this->assertEquals('Sample Item', $this->cart->getContent()->first()['name'], 'The first content must have name of "Sample Item"');
-        $this->assertInstanceOf('Darryldecode\Tests\helpers\MockProduct', $addedItem->model);
+        $this->assertInstanceOf('Lalalili\ShoppingCart\Tests\Helpers\MockProduct', $addedItem->model);
     }
 
     public function test_cart_can_add_items_with_multidimensional_array_with_associated_model()
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
-                'attributes' => array(),
+                'id'              => 456,
+                'name'            => 'Sample Item 1',
+                'price'           => 67.99,
+                'quantity'        => 4,
+                'attributes'      => array(),
                 'associatedModel' => MockProduct::class
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 4,
-                'attributes' => array(),
+                'id'              => 568,
+                'name'            => 'Sample Item 2',
+                'price'           => 69.25,
+                'quantity'        => 4,
+                'attributes'      => array(),
                 'associatedModel' => MockProduct::class
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 4,
-                'attributes' => array(),
+                'id'              => 856,
+                'name'            => 'Sample Item 3',
+                'price'           => 50.25,
+                'quantity'        => 4,
+                'attributes'      => array(),
                 'associatedModel' => MockProduct::class
             ),
         );
@@ -546,12 +545,12 @@ class CartTest extends PHPUnit\Framework\TestCase
 
         $content = $this->cart->getContent();
         foreach ($content as $item) {
-            $this->assertInstanceOf('Darryldecode\Tests\helpers\MockProduct', $item->model);
+            $this->assertInstanceOf('Lalalili\ShoppingCart\Tests\Helpers\MockProduct', $item->model);
         }
 
         $this->assertFalse($this->cart->isEmpty(), 'Cart should not be empty');
         $this->assertCount(3, $this->cart->getContent()->toArray(), 'Cart should have 3 items');
         $this->assertIsInt($this->cart->getTotalQuantity(), 'Return type should be INT');
-        $this->assertEquals(12, $this->cart->getTotalQuantity(),  'Cart\'s quantity should be 4.');
+        $this->assertEquals(12, $this->cart->getTotalQuantity(), 'Cart\'s quantity should be 4.');
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: darryl
@@ -6,18 +7,17 @@
  * Time: 6:17 PM
  */
 
-use Darryldecode\Cart\Cart;
+use Lalalili\ShoppingCart\Cart;
 use Mockery as m;
-use Darryldecode\Cart\CartCondition;
-use Darryldecode\Tests\helpers\MockProduct;
+use Lalalili\ShoppingCart\CartCondition;
+use Lalalili\ShoppingCart\Tests\Helpers\MockProduct;
 
 require_once __DIR__ . '/helpers/SessionMock.php';
 
 class ItemTest extends PHPUnit\Framework\TestCase
 {
-
     /**
-     * @var Darryldecode\Cart\Cart
+     * @var Lalalili\ShoppingCart\Cart
      */
     protected $cart;
 
@@ -69,18 +69,18 @@ class ItemTest extends PHPUnit\Framework\TestCase
 
     public function test_item_get_conditions_with_conditions()
     {
-        $itemCondition1 = new \Darryldecode\Cart\CartCondition(array(
-            'name' => 'SALE 5%',
-            'type' => 'sale',
+        $itemCondition1 = new \Lalalili\ShoppingCart\CartCondition(array(
+            'name'   => 'SALE 5%',
+            'type'   => 'sale',
             'target' => 'item',
-            'value' => '-5%',
+            'value'  => '-5%',
         ));
 
         $itemCondition2 = new CartCondition(array(
-            'name' => 'Item Gift Pack 25.00',
-            'type' => 'promo',
+            'name'   => 'Item Gift Pack 25.00',
+            'type'   => 'promo',
             'target' => 'item',
-            'value' => '-25',
+            'value'  => '-25',
         ));
 
         $this->cart->add(455, 'Sample Item', 100.99, 2, array(), [$itemCondition1, $itemCondition2]);
@@ -101,7 +101,7 @@ class ItemTest extends PHPUnit\Framework\TestCase
 
     public function test_it_will_throw_an_exception_when_a_non_existing_model_is_being_associated()
     {
-        $this->expectException(\Darryldecode\Cart\Exceptions\UnknownModelException::class);
+        $this->expectException(\Lalalili\ShoppingCart\Exceptions\UnknownModelException::class);
         $this->expectExceptionMessage('The supplied model SomeModel does not exist.');
 
         $this->cart->add(1, 'Test item', 1, 10.00)->associate('SomeModel');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: darryl
@@ -6,15 +7,15 @@
  * Time: 9:59 PM
  */
 
-use Darryldecode\Cart\Cart;
+use Lalalili\ShoppingCart\Cart;
 use Mockery as m;
 
 require_once __DIR__.'/helpers/SessionMock.php';
 
-class CartTestOtherFormat extends PHPUnit\Framework\TestCase  {
-
+class CartTestOtherFormat extends PHPUnit\Framework\TestCase
+{
     /**
-     * @var Darryldecode\Cart\Cart
+     * @var Lalalili\ShoppingCart\Cart
      */
     protected $cart;
 
@@ -29,7 +30,7 @@ class CartTestOtherFormat extends PHPUnit\Framework\TestCase  {
             'shopping',
             'SAMPLESESSIONKEY',
             require(__DIR__.'/helpers/configMockOtherFormat.php')
-    );
+        );
     }
 
     public function tearDown(): void
@@ -41,24 +42,24 @@ class CartTestOtherFormat extends PHPUnit\Framework\TestCase  {
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 1,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 1,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
@@ -77,17 +78,17 @@ class CartTestOtherFormat extends PHPUnit\Framework\TestCase  {
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );
@@ -106,17 +107,17 @@ class CartTestOtherFormat extends PHPUnit\Framework\TestCase  {
     {
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 3,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 3,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 1,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 1,
                 'attributes' => array()
             ),
         );

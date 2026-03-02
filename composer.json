@@ -1,43 +1,64 @@
 {
     "name": "lalalili/laravelshoppingcart",
-    "description": "Laravel Shopping cart",
+    "description": "Shopping cart package for Laravel 11/12 with PHP 8.3+ support.",
+    "version": "13.0.0",
+    "type": "library",
     "keywords": [
         "laravel",
         "shopping cart",
-        "cart"
+        "cart",
+        "ecommerce"
     ],
     "license": "MIT",
     "authors": [
         {
-            "name": "Darryl Fernandez",
-            "email": "engrdarrylfernandez@gmail.com"
+            "name": "James Liang",
+            "email": "lalalili@gmail.com"
         }
     ],
+    "support": {
+        "source": "https://github.com/lalalili/laravelshoppingcart",
+        "issues": "https://github.com/lalalili/laravelshoppingcart/issues"
+    },
     "require": {
-        "php": ">=7.3",
-        "illuminate/support": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/validation": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/translation": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0"
+        "php": "^8.3",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/translation": "^11.0|^12.0",
+        "illuminate/validation": "^11.0|^12.0"
     },
     "require-dev": {
-        "mockery/mockery": "^1.4.2",
-        "phpunit/phpunit": "^9.0",
-        "symfony/var-dumper": "5.1.5.*@dev|^7.2"
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^9.0|^10.0",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5|^12.0"
     },
     "autoload": {
         "psr-4": {
-            "Darryldecode\\": "src/Darryldecode"
+            "Lalalili\\ShoppingCart\\": "src/Lalalili/ShoppingCart/"
         }
     },
-    "minimum-stability": "dev",
+    "autoload-dev": {
+        "psr-4": {
+            "Lalalili\\ShoppingCart\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "extra": {
         "laravel": {
             "providers": [
-                "Darryldecode\\Cart\\CartServiceProvider"
+                "Lalalili\\ShoppingCart\\ShoppingCartServiceProvider"
             ],
             "aliases": {
-                "Cart": "Darryldecode\\Cart\\Facades\\CartFacade"
+                "ShoppingCart": "Lalalili\\ShoppingCart\\Facades\\ShoppingCartFacade"
             }
         }
+    },
+    "scripts": {
+        "test": "phpunit --configuration=phpunit.xml",
+        "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress"
+    },
+    "config": {
+        "sort-packages": true
     }
 }

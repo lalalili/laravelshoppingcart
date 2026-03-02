@@ -1,5 +1,6 @@
 <?php
-namespace Darryldecode\Tests\helpers;
+
+namespace Lalalili\ShoppingCart\Tests\Helpers;
 
 use Illuminate\Contracts\Database\ModelIdentifier;
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: darryl
@@ -6,20 +7,20 @@
  * Time: 1:45 PM
  */
 
-use Darryldecode\Cart\Cart;
+use Lalalili\ShoppingCart\Cart;
 use Mockery as m;
 
 require_once __DIR__.'/helpers/SessionMock.php';
 
-class CartTestMultipleInstances extends PHPUnit\Framework\TestCase {
-
+class CartTestMultipleInstances extends PHPUnit\Framework\TestCase
+{
     /**
-     * @var Darryldecode\Cart\Cart
+     * @var Lalalili\ShoppingCart\Cart
      */
     protected $cart1;
 
     /**
-     * @var Darryldecode\Cart\Cart
+     * @var Lalalili\ShoppingCart\Cart
      */
     protected $cart2;
 
@@ -55,24 +56,24 @@ class CartTestMultipleInstances extends PHPUnit\Framework\TestCase {
         // add 3 items on cart 1
         $itemsForCart1 = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 4,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 4,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
         );
@@ -86,10 +87,10 @@ class CartTestMultipleInstances extends PHPUnit\Framework\TestCase {
         // add 1 item on cart 2
         $itemsForCart2 = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
         );

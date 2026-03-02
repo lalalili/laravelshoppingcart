@@ -1,73 +1,36 @@
-<?php namespace Darryldecode\Cart;
+<?php
 
-use Darryldecode\Cart\Exceptions\InvalidConditionException;
-use Darryldecode\Cart\Exceptions\InvalidItemException;
-use Darryldecode\Cart\Helpers\Helpers;
-use Darryldecode\Cart\Validators\CartItemValidator;
-use Darryldecode\Cart\Exceptions\UnknownModelException;
+declare(strict_types=1);
 
-/**
- * Class Cart
- * @package Darryldecode\Cart
- */
+namespace Lalalili\ShoppingCart;
+
+use Lalalili\ShoppingCart\Exceptions\InvalidConditionException;
+use Lalalili\ShoppingCart\Exceptions\InvalidItemException;
+use Lalalili\ShoppingCart\Helpers\Helpers;
+use Lalalili\ShoppingCart\Validators\CartItemValidator;
+use Lalalili\ShoppingCart\Exceptions\UnknownModelException;
+use Throwable;
+
 class Cart
 {
+    protected mixed $session;
+
+    protected mixed $events;
+
+    protected string $instanceName;
+
+    protected string $sessionKey;
+
+    protected string $sessionKeyCartItems;
+
+    protected string $sessionKeyCartConditions;
 
     /**
-     * the item storage
-     *
-     * @var
+     * @var array<string, mixed>
      */
-    protected $session;
+    protected array $config;
 
-    /**
-     * the event dispatcher
-     *
-     * @var
-     */
-    protected $events;
-
-    /**
-     * the cart session key
-     *
-     * @var
-     */
-    protected $instanceName;
-
-    /**
-     * the session key use for the cart
-     *
-     * @var
-     */
-    protected $sessionKey;
-
-    /**
-     * the session key use to persist cart items
-     *
-     * @var
-     */
-    protected $sessionKeyCartItems;
-
-    /**
-     * the session key use to persist cart conditions
-     *
-     * @var
-     */
-    protected $sessionKeyCartConditions;
-
-    /**
-     * Configuration to pass to ItemCollection
-     *
-     * @var
-     */
-    protected $config;
-
-    /**
-     * This holds the currently added item id in cart for association
-     * 
-     * @var
-     */
-    protected $currentItemId;
+    protected int|string|null $currentItemId;
 
     /**
      * our object constructor
@@ -78,8 +41,13 @@ class Cart
      * @param $session_key
      * @param $config
      */
-    public function __construct($session, $events, $instanceName, $session_key, $config)
-    {
+    public function __construct(
+        mixed $session,
+        mixed $events,
+        string $instanceName,
+        string $session_key,
+        array $config
+    ) {
         $this->events = $events;
         $this->session = $session;
         $this->instanceName = $instanceName;
@@ -95,12 +63,14 @@ class Cart
      * sets the session key
      *
      * @param string $sessionKey the session key or identifier
-     * @return $this|bool
+     * @return $this
      * @throws \Exception
      */
-    public function session($sessionKey)
+    public function session(string $sessionKey): self
     {
-        if (!$sessionKey) throw new \Exception("Session key is required.");
+        if ($sessionKey === '') {
+            throw new \InvalidArgumentException('Session key is required.');
+        }
 
         $this->sessionKey = $sessionKey;
         $this->sessionKeyCartItems = $this->sessionKey . '_cart_items';
@@ -114,7 +84,7 @@ class Cart
      *
      * @return string
      */
-    public function getInstanceName()
+    public function getInstanceName(): string
     {
         return $this->instanceName;
     }
@@ -189,10 +159,10 @@ class Cart
         }
 
         $data = array(
-            'id' => $id,
-            'name' => $name,
-            'price' => Helpers::normalizePrice($price),
-            'quantity' => $quantity,
+            'id'         => $id,
+            'name'       => $name,
+            'price'      => Helpers::normalizePrice($price),
+            'quantity'   => $quantity,
             'attributes' => new ItemAttributeCollection($attributes),
             'conditions' => $conditions
         );
@@ -281,31 +251,31 @@ class Cart
      * add condition on an existing item on the cart
      *
      * @param int|string $productId
-     * @param CartCondition $itemCondition
+     * @param mixed $itemCondition
      * @return $this
      */
-    public function addItemCondition($productId, $itemCondition)
+    public function addItemCondition(int|string $productId, mixed $itemCondition): self
     {
+        if (!$itemCondition instanceof CartCondition) {
+            return $this;
+        }
+
         if ($product = $this->get($productId)) {
-            $conditionInstance = "\\Darryldecode\\Cart\\CartCondition";
+            // we need to copy first to a temporary variable to hold the conditions
+            // to avoid hitting this error "Indirect modification of overloaded element of Lalalili\ShoppingCart\ItemCollection has no effect"
+            // this is due to laravel Collection instance that implements Array Access
+            // // see link for more info: http://stackoverflow.com/questions/20053269/indirect-modification-of-overloaded-element-of-splfixedarray-has-no-effect
+            $itemConditionTempHolder = $product['conditions'];
 
-            if ($itemCondition instanceof $conditionInstance) {
-                // we need to copy first to a temporary variable to hold the conditions
-                // to avoid hitting this error "Indirect modification of overloaded element of Darryldecode\Cart\ItemCollection has no effect"
-                // this is due to laravel Collection instance that implements Array Access
-                // // see link for more info: http://stackoverflow.com/questions/20053269/indirect-modification-of-overloaded-element-of-splfixedarray-has-no-effect
-                $itemConditionTempHolder = $product['conditions'];
-
-                if (is_array($itemConditionTempHolder)) {
-                    array_push($itemConditionTempHolder, $itemCondition);
-                } else {
-                    $itemConditionTempHolder = $itemCondition;
-                }
-
-                $this->update($productId, array(
-                    'conditions' => $itemConditionTempHolder // the newly updated conditions
-                ));
+            if (is_array($itemConditionTempHolder)) {
+                array_push($itemConditionTempHolder, $itemCondition);
+            } else {
+                $itemConditionTempHolder = $itemCondition;
             }
+
+            $this->update($productId, array(
+                'conditions' => $itemConditionTempHolder // the newly updated conditions
+            ));
         }
 
         return $this;
@@ -355,11 +325,11 @@ class Cart
     /**
      * add a condition on the cart
      *
-     * @param CartCondition|array $condition
+     * @param mixed $condition
      * @return $this
      * @throws InvalidConditionException
      */
-    public function condition($condition)
+    public function condition(mixed $condition): self
     {
         if (is_array($condition)) {
             foreach ($condition as $c) {
@@ -369,7 +339,9 @@ class Cart
             return $this;
         }
 
-        if (!$condition instanceof CartCondition) throw new InvalidConditionException('Argument 1 must be an instance of \'Darryldecode\Cart\CartCondition\'');
+        if (!$condition instanceof CartCondition) {
+            throw new InvalidConditionException('Argument 1 must be an instance of \'Lalalili\ShoppingCart\CartCondition\'');
+        }
 
         $conditions = $this->getConditions();
 
@@ -440,6 +412,8 @@ class Cart
         $this->getConditionsByType($type)->each(function ($condition) {
             $this->removeCartCondition($condition->getName());
         });
+
+        return $this;
     }
 
 
@@ -502,7 +476,7 @@ class Cart
             // on the given condition name the user wants to remove, if so,
             // lets just make $item['conditions'] an empty array as there's just 1 condition on it anyway
             else {
-                $conditionInstance = "Darryldecode\\Cart\\CartCondition";
+                $conditionInstance = "Lalalili\\ShoppingCart\\CartCondition";
 
                 if ($item['conditions'] instanceof $conditionInstance) {
                     if ($tempConditionsHolder->getName() == $conditionName) {
@@ -591,7 +565,9 @@ class Cart
             });
 
         // if there is no conditions, lets just return the sum
-        if (!$conditions->count()) return Helpers::formatValue(floatval($sum), $formatted, $this->config);
+        if (!$conditions->count()) {
+            return Helpers::formatValue(floatval($sum), $formatted, $this->config);
+        }
 
         // there are conditions, lets apply it
         $newTotal = 0.00;
@@ -656,7 +632,9 @@ class Cart
     {
         $items = $this->getContent();
 
-        if ($items->isEmpty()) return 0;
+        if ($items->isEmpty()) {
+            return 0;
+        }
 
         $count = $items->sum(function ($item) {
             return $item['quantity'];
@@ -672,7 +650,7 @@ class Cart
      */
     public function getContent()
     {
-        return (new CartCollection($this->session->get($this->sessionKeyCartItems)))->reject(function($item) {
+        return (new CartCollection($this->session->get($this->sessionKeyCartItems)))->reject(function ($item) {
             return ! ($item instanceof ItemCollection);
         });
     }
@@ -697,16 +675,16 @@ class Cart
     protected function validate($item)
     {
         $rules = array(
-            'id' => 'required',
-            'price' => 'required|numeric',
+            'id'       => 'required',
+            'price'    => 'required|numeric',
             'quantity' => 'required|numeric|min:0.1',
-            'name' => 'required',
+            'name'     => 'required',
         );
 
         $validator = CartItemValidator::make($item, $rules);
 
         if ($validator->fails()) {
-            throw new InvalidItemException($validator->messages()->first());
+            throw new InvalidItemException($validator->errors()->first());
         }
 
         return $item;
@@ -764,15 +742,19 @@ class Cart
      */
     protected function itemHasConditions($item)
     {
-        if (!isset($item['conditions'])) return false;
+        if (!isset($item['conditions'])) {
+            return false;
+        }
 
         if (is_array($item['conditions'])) {
             return count($item['conditions']) > 0;
         }
 
-        $conditionInstance = "Darryldecode\\Cart\\CartCondition";
+        $conditionInstance = "Lalalili\\ShoppingCart\\CartCondition";
 
-        if ($item['conditions'] instanceof $conditionInstance) return true;
+        if ($item['conditions'] instanceof $conditionInstance) {
+            return true;
+        }
 
         return false;
     }
@@ -787,18 +769,20 @@ class Cart
      */
     protected function updateQuantityRelative($item, $key, $value)
     {
-        if (preg_match('/\-/', $value) == 1) {
-            $value = (int)str_replace('-', '', $value);
+        $stringValue = (string) $value;
+
+        if (preg_match('/\-/', $stringValue) == 1) {
+            $value = (int) str_replace('-', '', $stringValue);
 
             // we will not allowed to reduced quantity to 0, so if the given value
             // would result to item quantity of 0, we will not do it.
             if (($item[$key] - $value) > 0) {
                 $item[$key] -= $value;
             }
-        } elseif (preg_match('/\+/', $value) == 1) {
-            $item[$key] += (int)str_replace('+', '', $value);
+        } elseif (preg_match('/\+/', $stringValue) == 1) {
+            $item[$key] += (int) str_replace('+', '', $stringValue);
         } else {
-            $item[$key] += (int)$value;
+            $item[$key] += (int) $value;
         }
 
         return $item;
@@ -823,23 +807,29 @@ class Cart
      * Setter for decimals. Change value on demand.
      * @param $decimals
      */
-    public function setDecimals($decimals)
+    public function setDecimals(int $decimals): self
     {
-        $this->decimals = $decimals;
+        $this->config['decimals'] = $decimals;
+
+        return $this;
     }
 
     /**
      * Setter for decimals point. Change value on demand.
      * @param $dec_point
      */
-    public function setDecPoint($dec_point)
+    public function setDecPoint(string $dec_point): self
     {
-        $this->dec_point = $dec_point;
+        $this->config['dec_point'] = $dec_point;
+
+        return $this;
     }
 
-    public function setThousandsSep($thousands_sep)
+    public function setThousandsSep(string $thousands_sep): self
     {
-        $this->thousands_sep = $thousands_sep;
+        $this->config['thousands_sep'] = $thousands_sep;
+
+        return $this;
     }
 
     /**
@@ -847,20 +837,31 @@ class Cart
      * @param $value
      * @return mixed
      */
-    protected function fireEvent($name, $value = [])
+    protected function fireEvent(string $name, mixed $value = []): mixed
     {
-        return $this->events->dispatch($this->getInstanceName() . '.' . $name, array_values([$value, $this]), true);
+        if (!is_object($this->events) || !method_exists($this->events, 'dispatch')) {
+            return null;
+        }
+
+        try {
+            return $this->events->dispatch(
+                $this->getInstanceName() . '.' . $name,
+                [$value, $this],
+                true
+            );
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**
      * Associate the cart item with the given id with the given model.
      *
-     * @param string $id
-     * @param mixed  $model
+     * @param mixed $model
      *
-     * @return void
+     * @return $this
      */
-    public function associate($model)
+    public function associate(mixed $model): self
     {
         if (is_string($model) && !class_exists($model)) {
             throw new UnknownModelException("The supplied model {$model} does not exist.");

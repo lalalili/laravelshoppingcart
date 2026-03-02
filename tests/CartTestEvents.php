@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: darryl
@@ -6,14 +7,14 @@
  * Time: 3:20 PM
  */
 
-use Darryldecode\Cart\Cart;
+use Lalalili\ShoppingCart\Cart;
 use Mockery as m;
 
 require_once __DIR__.'/helpers/SessionMock.php';
 
-class CartTestEvents extends PHPUnit\Framework\TestCase {
-
-    const CART_INSTANCE_NAME = 'shopping';
+class CartTestEvents extends PHPUnit\Framework\TestCase
+{
+    public const CART_INSTANCE_NAME = 'shopping';
 
     public function setUp(): void
     {
@@ -90,24 +91,24 @@ class CartTestEvents extends PHPUnit\Framework\TestCase {
 
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 4,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 4,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
         );
@@ -136,24 +137,24 @@ class CartTestEvents extends PHPUnit\Framework\TestCase {
 
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 4,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 4,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
         );
@@ -184,24 +185,24 @@ class CartTestEvents extends PHPUnit\Framework\TestCase {
 
         $items = array(
             array(
-                'id' => 456,
-                'name' => 'Sample Item 1',
-                'price' => 67.99,
-                'quantity' => 4,
+                'id'         => 456,
+                'name'       => 'Sample Item 1',
+                'price'      => 67.99,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 568,
-                'name' => 'Sample Item 2',
-                'price' => 69.25,
-                'quantity' => 4,
+                'id'         => 568,
+                'name'       => 'Sample Item 2',
+                'price'      => 69.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
             array(
-                'id' => 856,
-                'name' => 'Sample Item 3',
-                'price' => 50.25,
-                'quantity' => 4,
+                'id'         => 856,
+                'name'       => 'Sample Item 3',
+                'price'      => 50.25,
+                'quantity'   => 4,
                 'attributes' => array()
             ),
         );
