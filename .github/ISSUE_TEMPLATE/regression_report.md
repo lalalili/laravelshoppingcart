@@ -13,9 +13,9 @@ assignees: []
 ## Current broken version
 
 ## Reproduction steps
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Expected vs actual
 

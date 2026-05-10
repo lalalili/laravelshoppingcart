@@ -44,6 +44,9 @@ jobs:
           - check_name: ci-php84-l12
             php: '8.4'
             testbench: '^10.0'
+          - check_name: ci-php84-l13
+            php: '8.4'
+            testbench: '^11.0'
 
     steps:
       - name: Checkout code
@@ -84,8 +87,8 @@ jobs:
           php-version: '8.4'
           coverage: xdebug
 
-      - name: Pin Testbench for Laravel 12
-        run: composer require --dev "orchestra/testbench:^10.0" --no-update --no-interaction
+      - name: Pin Testbench for Laravel 13
+        run: composer require --dev "orchestra/testbench:^11.0" --no-update --no-interaction
 
       - name: Install package dependencies
         run: composer update --prefer-dist --no-interaction --no-progress

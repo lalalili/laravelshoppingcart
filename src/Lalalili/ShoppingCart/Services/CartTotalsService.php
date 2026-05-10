@@ -11,7 +11,7 @@ use Lalalili\ShoppingCart\Helpers\Helpers;
 use Lalalili\ShoppingCart\ItemCollection;
 
 /**
- * @phpstan-type CartConfig array{format_numbers: bool, decimals: int, dec_point: string, thousands_sep: string}
+ * @phpstan-type CartConfig array<string, mixed>
  */
 class CartTotalsService
 {
@@ -24,7 +24,9 @@ class CartTotalsService
             return (float) $item->getPriceSum();
         });
 
-        return Helpers::formatValue((float) $sum, $formatted, $config);
+        $sum = Helpers::roundValue((float) $sum, Helpers::roundingRule($config, 'subtotal_without_conditions'));
+
+        return Helpers::formatValue($sum, $formatted, $config);
     }
 
     /**
@@ -45,7 +47,9 @@ class CartTotalsService
         });
 
         if ($subtotalConditions->isEmpty()) {
-            return Helpers::formatValue((float) $sum, $formatted, $config);
+            $sum = Helpers::roundValue((float) $sum, Helpers::roundingRule($config, 'subtotal'));
+
+            return Helpers::formatValue($sum, $formatted, $config);
         }
 
         $newTotal = 0.00;
@@ -57,7 +61,9 @@ class CartTotalsService
             $process++;
         });
 
-        return Helpers::formatValue((float) $newTotal, $formatted, $config);
+        $newTotal = Helpers::roundValue((float) $newTotal, Helpers::roundingRule($config, 'subtotal'));
+
+        return Helpers::formatValue($newTotal, $formatted, $config);
     }
 
     /**
@@ -74,6 +80,8 @@ class CartTotalsService
         });
 
         if ($totalConditions->isEmpty()) {
+            $subTotal = Helpers::roundValue($subTotal, Helpers::roundingRule($config, 'total'));
+
             return Helpers::formatValue($subTotal, $formatted, $config);
         }
 
@@ -85,6 +93,8 @@ class CartTotalsService
             $newTotal = $condition->applyCondition($toBeCalculated);
             $process++;
         });
+
+        $newTotal = Helpers::roundValue($newTotal, Helpers::roundingRule($config, 'total'));
 
         return Helpers::formatValue($newTotal, $formatted, $config);
     }

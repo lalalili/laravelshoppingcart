@@ -6,6 +6,7 @@ namespace Lalalili\ShoppingCart;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
+use Lalalili\ShoppingCart\Contracts\AssociatedModelResolverInterface;
 use Lalalili\ShoppingCart\Helpers\Helpers;
 
 /**
@@ -59,6 +60,11 @@ class ItemCollection extends Collection
         $associatedModel = $this->get('associatedModel');
         $id = $this->get('id');
 
+        $resolved = $this->resolveAssociatedModel($associatedModel, $id);
+        if ($resolved !== self::class) {
+            return $resolved;
+        }
+
         if (!is_string($associatedModel) || !class_exists($associatedModel)) {
             return null;
         }
@@ -70,6 +76,29 @@ class ItemCollection extends Collection
         }
 
         return $model->find($id);
+    }
+
+    private function resolveAssociatedModel(mixed $associatedModel, mixed $id): mixed
+    {
+        $resolver = $this->config['associated_model_resolver'] ?? null;
+
+        if ($resolver === null || $resolver === '') {
+            return self::class;
+        }
+
+        if (is_string($resolver) && class_exists($resolver)) {
+            $resolver = function_exists('app') ? app($resolver) : new $resolver();
+        }
+
+        if ($resolver instanceof AssociatedModelResolverInterface) {
+            return $resolver->resolve($this, $associatedModel, $id);
+        }
+
+        if (is_callable($resolver)) {
+            return $resolver($this, $associatedModel, $id);
+        }
+
+        return self::class;
     }
 
     public function hasConditions(): bool
@@ -127,8 +156,18 @@ class ItemCollection extends Collection
                 $newPrice = $conditions->applyCondition($originalPrice);
             }
 
+            $newPrice = Helpers::roundValue(
+                $newPrice,
+                Helpers::roundingRule($this->config, 'item_price')
+            );
+
             return Helpers::formatValue($newPrice, (bool) $formatted, $this->config);
         }
+
+        $originalPrice = Helpers::roundValue(
+            $originalPrice,
+            Helpers::roundingRule($this->config, 'item_price')
+        );
 
         return Helpers::formatValue($originalPrice, (bool) $formatted, $this->config);
     }
@@ -136,9 +175,17 @@ class ItemCollection extends Collection
     public function getPriceSumWithConditions(bool $formatted = true): float|int|string
     {
         $quantity = Helpers::toFloat($this->get('quantity'));
+        $unitPrice = Helpers::roundValue(
+            (float) $this->getPriceWithConditions(false),
+            Helpers::roundingRule($this->config, 'item_price_before_quantity')
+        );
+        $lineSubtotal = Helpers::roundValue(
+            $unitPrice * $quantity,
+            Helpers::roundingRule($this->config, 'line_subtotal')
+        );
 
         return Helpers::formatValue(
-            (float) $this->getPriceWithConditions(false) * $quantity,
+            $lineSubtotal,
             (bool) $formatted,
             $this->config
         );

@@ -11,6 +11,7 @@ use Lalalili\ShoppingCart\Cart;
 use Mockery as m;
 use Lalalili\ShoppingCart\CartCondition;
 use Lalalili\ShoppingCart\Tests\Helpers\MockProduct;
+use Lalalili\ShoppingCart\Tests\Helpers\StaticAssociatedModelResolver;
 
 require_once __DIR__ . '/helpers/SessionMock.php';
 
@@ -116,6 +117,34 @@ class ItemTest extends PHPUnit\Framework\TestCase
         $this->assertInstanceOf(MockProduct::class, $item->model);
         $this->assertEquals('Sample Item', $item->model->name);
         $this->assertEquals(455, $item->model->id);
+    }
+
+    public function test_item_get_model_can_use_configured_resolver()
+    {
+        $config = require(__DIR__ . '/helpers/configMock.php');
+        $config['associated_model_resolver'] = StaticAssociatedModelResolver::class;
+
+        $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
+        $events->shouldReceive('dispatch');
+
+        $cart = new Cart(
+            new SessionMock(),
+            $events,
+            'shopping',
+            'RESOLVER',
+            $config
+        );
+
+        $cart->add([
+            'id' => 455,
+            'name' => 'Sample Item',
+            'price' => 100.99,
+            'quantity' => 2,
+            'associatedModel' => 'Product',
+        ]);
+
+        $this->assertInstanceOf(MockProduct::class, $cart->get(455)->model);
+        $this->assertEquals('Resolved Product', $cart->get(455)->model->name);
     }
 
     public function test_item_get_model_will_return_null_if_it_has_no_model()

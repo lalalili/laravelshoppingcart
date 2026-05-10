@@ -37,8 +37,8 @@ class PackageIntegrationTest extends TestCase
         $from = array_key_first($paths);
         $to = $from !== null ? $paths[$from] : null;
 
-        $this->assertStringContainsString('lalalili_shopping_cart.php', (string) $from);
-        $this->assertStringContainsString('lalalili_shopping_cart.php', (string) $to);
+        $this->assertStringContainsString('shopping_cart.php', (string) $from);
+        $this->assertStringContainsString('shopping_cart.php', (string) $to);
     }
 
     public function test_facade_resolves_cart_instance_with_session_switching(): void

@@ -107,4 +107,68 @@ class Helpers
 
         return $value;
     }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public static function roundingRule(array $config, string $key): mixed
+    {
+        $rounding = $config['rounding'] ?? [];
+
+        if (!is_array($rounding)) {
+            return null;
+        }
+
+        return $rounding[$key] ?? null;
+    }
+
+    /**
+     * @param mixed $rule false|null|int|array{precision?: int|numeric-string, mode?: int|string}
+     */
+    public static function roundValue(float|int $value, mixed $rule): float|int
+    {
+        if ($rule === null || $rule === false) {
+            return $value;
+        }
+
+        $precision = 0;
+        $mode = PHP_ROUND_HALF_UP;
+
+        if (is_int($rule)) {
+            $precision = $rule;
+        } elseif (is_array($rule)) {
+            $precision = self::toInt($rule['precision'] ?? 0);
+            $mode = self::resolveRoundingMode($rule['mode'] ?? PHP_ROUND_HALF_UP);
+        } else {
+            return $value;
+        }
+
+        return round((float) $value, $precision, $mode);
+    }
+
+    /**
+     * @return PHP_ROUND_HALF_UP|PHP_ROUND_HALF_DOWN|PHP_ROUND_HALF_EVEN|PHP_ROUND_HALF_ODD
+     */
+    private static function resolveRoundingMode(mixed $mode): int
+    {
+        if (is_int($mode)) {
+            return match ($mode) {
+                PHP_ROUND_HALF_DOWN => PHP_ROUND_HALF_DOWN,
+                PHP_ROUND_HALF_EVEN => PHP_ROUND_HALF_EVEN,
+                PHP_ROUND_HALF_ODD => PHP_ROUND_HALF_ODD,
+                default => PHP_ROUND_HALF_UP,
+            };
+        }
+
+        if (is_string($mode)) {
+            return match ($mode) {
+                'half_down' => PHP_ROUND_HALF_DOWN,
+                'half_even' => PHP_ROUND_HALF_EVEN,
+                'half_odd' => PHP_ROUND_HALF_ODD,
+                default => PHP_ROUND_HALF_UP,
+            };
+        }
+
+        return PHP_ROUND_HALF_UP;
+    }
 }

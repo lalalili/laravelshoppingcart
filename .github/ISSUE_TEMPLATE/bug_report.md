@@ -15,9 +15,9 @@ Describe the bug clearly.
 - Laravel version:
 
 ## Reproduction steps
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Expected behavior
 

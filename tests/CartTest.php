@@ -8,8 +8,13 @@
  */
 
 use Lalalili\ShoppingCart\Cart;
+use Lalalili\ShoppingCart\CartCondition;
+use Lalalili\ShoppingCart\Exceptions\StaleCartException;
+use Lalalili\ShoppingCart\Tests\Helpers\AddDiscountPipeline;
 use Mockery as m;
+use Lalalili\ShoppingCart\Tests\Helpers\CustomItemCollection;
 use Lalalili\ShoppingCart\Tests\Helpers\MockProduct;
+use Lalalili\ShoppingCart\Tests\Helpers\WarningPipeline;
 
 require_once __DIR__ . '/helpers/SessionMock.php';
 
@@ -105,6 +110,77 @@ class CartTest extends PHPUnit\Framework\TestCase
 
         $this->assertFalse($this->cart->isEmpty(), 'Cart should not be empty');
         $this->assertCount(3, $this->cart->getContent()->toArray(), 'Cart should have 3 items');
+    }
+
+    public function test_cart_can_add_many_items_with_single_batch_api()
+    {
+        $this->cart->addMany([
+            [
+                'id' => 456,
+                'name' => 'Sample Item 1',
+                'price' => 67.99,
+                'quantity' => 4,
+                'attributes' => [],
+            ],
+            [
+                'id' => 568,
+                'name' => 'Sample Item 2',
+                'price' => 69.25,
+                'quantity' => 1,
+                'attributes' => [],
+            ],
+        ]);
+
+        $this->assertCount(2, $this->cart->getContent());
+        $this->assertEquals(5, $this->cart->getTotalQuantity());
+
+        $this->cart->addMany([
+            [
+                'id' => 456,
+                'name' => 'Sample Item 1',
+                'price' => 67.99,
+                'quantity' => 2,
+                'attributes' => [],
+            ],
+        ]);
+
+        $this->assertEquals(6, $this->cart->get(456)['quantity']);
+    }
+
+    public function test_cart_can_remove_many_items_with_single_batch_api()
+    {
+        $this->cart->addMany([
+            ['id' => 456, 'name' => 'Sample Item 1', 'price' => 67.99, 'quantity' => 4],
+            ['id' => 568, 'name' => 'Sample Item 2', 'price' => 69.25, 'quantity' => 1],
+            ['id' => 856, 'name' => 'Sample Item 3', 'price' => 50.25, 'quantity' => 2],
+        ]);
+
+        $this->assertTrue($this->cart->removeMany([456, 856, 999]));
+        $this->assertFalse($this->cart->has(456));
+        $this->assertFalse($this->cart->has(856));
+        $this->assertTrue($this->cart->has(568));
+        $this->assertFalse($this->cart->removeMany([999]));
+    }
+
+    public function test_cart_can_use_configured_item_collection_class()
+    {
+        $config = require(__DIR__ . '/helpers/configMock.php');
+        $config['item_collection_class'] = CustomItemCollection::class;
+
+        $cart = new Cart(
+            new SessionMock(),
+            $this->events(),
+            'shopping',
+            'CUSTOMCOLLECTION',
+            $config
+        );
+
+        $cart->add(456, 'Sample Item', 67.99, 1);
+
+        $item = $cart->get(456);
+
+        $this->assertInstanceOf(CustomItemCollection::class, $item);
+        $this->assertEquals('custom-item-collection', $item->marker());
     }
 
     public function test_cart_can_add_item_without_attributes()
@@ -253,6 +329,135 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->cart->add(455, 'Sample Item', '100.99', 2, array());
 
         $this->assertIsFloat($this->cart->getContent()->first()['price'], 'Cart price should be a float');
+    }
+
+    public function test_cart_rounds_item_price_before_multiplying_quantity_when_configured()
+    {
+        $config = require(__DIR__ . '/helpers/configMock.php');
+        $config['rounding'] = [
+            'item_price_before_quantity' => 0,
+        ];
+
+        $cart = new Cart(
+            new SessionMock(),
+            $this->events(),
+            'shopping',
+            'ROUNDING',
+            $config
+        );
+
+        $cart->add(455, 'Sample Item', 100.49, 2, array());
+
+        $this->assertEquals(200.0, $cart->getSubTotal(false));
+    }
+
+    public function test_cart_snapshot_contains_context_totals_hash_and_conditions()
+    {
+        $this->cart
+            ->withContext(['customer_id' => 123, 'channel' => 'web'])
+            ->add(455, 'Sample Item', 100, 2, ['color' => 'red']);
+
+        $this->cart->condition(new CartCondition([
+            'name' => 'shipping',
+            'type' => 'shipping',
+            'target' => 'total',
+            'value' => '+50',
+        ]));
+
+        $snapshot = $this->cart->snapshot(false);
+
+        $this->assertSame('shopping', $snapshot['instance']);
+        $this->assertSame('SAMPLESESSIONKEY', $snapshot['session_key']);
+        $this->assertSame(['customer_id' => 123, 'channel' => 'web'], $snapshot['context']);
+        $this->assertSame(250.0, $snapshot['total']);
+        $this->assertSame(2, $snapshot['quantity']);
+        $this->assertNotEmpty($snapshot['hash']);
+        $this->assertSame('shipping', $snapshot['conditions'][0]['name']);
+        $this->assertSame('red', $snapshot['items'][0]['attributes']['color']);
+    }
+
+    public function test_cart_explains_item_subtotal_and_total_condition_steps()
+    {
+        $this->cart->add(455, 'Sample Item', 100, 2, [], [
+            new CartCondition([
+                'name' => 'line-discount',
+                'type' => 'discount',
+                'value' => '-10%',
+            ]),
+        ]);
+        $this->cart->condition(new CartCondition([
+            'name' => 'shipping',
+            'type' => 'shipping',
+            'target' => 'total',
+            'value' => '+20',
+        ]));
+
+        $explain = $this->cart->explainTotals(false);
+
+        $this->assertSame(180.0, $explain['subtotal']);
+        $this->assertSame(200.0, $explain['subtotal_without_conditions']);
+        $this->assertSame(200.0, $explain['total']);
+        $this->assertSame('line-discount', $explain['items'][0]['condition_steps'][0]['condition']['name']);
+        $this->assertSame('shipping', $explain['total_conditions'][0]['condition']['name']);
+    }
+
+    public function test_cart_hash_guard_detects_stale_cart_state()
+    {
+        $this->cart->add(455, 'Sample Item', 100, 1);
+        $hash = $this->cart->hash();
+
+        $this->cart->update(455, ['quantity' => 1]);
+
+        $this->expectException(StaleCartException::class);
+
+        $this->cart->assertHash($hash);
+    }
+
+    public function test_cart_runs_configured_before_totals_pipeline_once_per_state()
+    {
+        $config = require(__DIR__ . '/helpers/configMock.php');
+        $config['pipelines'] = [
+            'before_totals' => [AddDiscountPipeline::class],
+        ];
+
+        $cart = new Cart(
+            new SessionMock(),
+            $this->events(),
+            'shopping',
+            'PIPELINE',
+            $config
+        );
+
+        $cart->withContext(['channel' => 'web']);
+        $cart->add(455, 'Sample Item', 100, 1);
+
+        $this->assertSame(90.0, $cart->getTotal(false));
+        $this->assertSame(90.0, $cart->getTotal(false));
+        $this->assertSame('web', $cart->getCondition('pipeline-discount')->getAttributes()['channel']);
+        $this->assertTrue($cart->snapshot(false)['pipelines']['before_totals']['changed']);
+    }
+
+    public function test_cart_can_run_before_checkout_pipeline_and_expose_result()
+    {
+        $config = require(__DIR__ . '/helpers/configMock.php');
+        $config['pipelines'] = [
+            'before_checkout' => [WarningPipeline::class],
+        ];
+
+        $cart = new Cart(
+            new SessionMock(),
+            $this->events(),
+            'shopping',
+            'CHECKOUTPIPELINE',
+            $config
+        );
+
+        $cart->withContext(['channel' => 'web']);
+        $result = $cart->runPipelines('before_checkout');
+
+        $this->assertFalse($result->changed());
+        $this->assertSame(['checkout requires inventory confirmation'], $result->warnings());
+        $this->assertSame('web', $cart->snapshot(false)['pipelines']['before_checkout']['metadata']['channel']);
     }
 
     public function test_it_removes_an_item_on_cart_by_item_id()
@@ -560,5 +765,13 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->assertCount(3, $this->cart->getContent()->toArray(), 'Cart should have 3 items');
         $this->assertIsInt($this->cart->getTotalQuantity(), 'Return type should be INT');
         $this->assertEquals(12, $this->cart->getTotalQuantity(), 'Cart\'s quantity should be 4.');
+    }
+
+    private function events(): mixed
+    {
+        $events = m::mock('Illuminate\Contracts\Events\Dispatcher');
+        $events->shouldReceive('dispatch');
+
+        return $events;
     }
 }

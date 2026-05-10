@@ -6,7 +6,7 @@ use Lalalili\ShoppingCart\Cart;
 
 class ApiCompatibilityTest extends PHPUnit\Framework\TestCase
 {
-    public function test_cart_public_api_snapshot_for_v13x_non_breaking_contract(): void
+    public function test_cart_public_api_snapshot_for_v14x_non_breaking_contract(): void
     {
         $expectedMethods = [
             '__construct',
@@ -15,9 +15,11 @@ class ApiCompatibilityTest extends PHPUnit\Framework\TestCase
             'get',
             'has',
             'add',
+            'addMany',
             'update',
             'addItemCondition',
             'remove',
+            'removeMany',
             'clear',
             'condition',
             'getConditions',
@@ -34,6 +36,15 @@ class ApiCompatibilityTest extends PHPUnit\Framework\TestCase
             'getTotalQuantity',
             'getContent',
             'isEmpty',
+            'snapshot',
+            'explainTotals',
+            'withContext',
+            'getContext',
+            'version',
+            'hash',
+            'assertHash',
+            'runPipelines',
+            'pipelineResults',
             'setDecimals',
             'setDecPoint',
             'setThousandsSep',

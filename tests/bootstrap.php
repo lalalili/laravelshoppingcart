@@ -16,3 +16,7 @@ foreach ($autoloadCandidates as $autoloadPath) {
 }
 
 require_once __DIR__ . '/helpers/MockProduct.php';
+require_once __DIR__ . '/helpers/CustomItemCollection.php';
+require_once __DIR__ . '/helpers/StaticAssociatedModelResolver.php';
+require_once __DIR__ . '/helpers/AddDiscountPipeline.php';
+require_once __DIR__ . '/helpers/WarningPipeline.php';
