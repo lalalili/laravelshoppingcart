@@ -1137,7 +1137,7 @@ class Cart
         $this->pipelineResults = [];
     }
 
-    private function runConfiguredPipelinesBeforeTotals(): void
+    protected function runConfiguredPipelinesBeforeTotals(): void
     {
         $pipelines = $this->config['pipelines'] ?? [];
         $autoRun = is_array($pipelines) ? ($pipelines['auto_run_before_totals'] ?? true) : true;
