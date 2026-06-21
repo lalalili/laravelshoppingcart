@@ -32,15 +32,9 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - check_name: ci-php83-l11
-            php: '8.3'
-            testbench: '^9.0'
           - check_name: ci-php83-l12
             php: '8.3'
             testbench: '^10.0'
-          - check_name: ci-php84-l11
-            php: '8.4'
-            testbench: '^9.0'
           - check_name: ci-php84-l12
             php: '8.4'
             testbench: '^10.0'
