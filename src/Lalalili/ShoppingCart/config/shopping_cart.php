@@ -100,4 +100,25 @@ return [
         'prefix' => 'cart',
         'middleware' => [],
     ],
+
+    /*
+     * ---------------------------------------------------------------
+     * named cart instances
+     * ---------------------------------------------------------------
+     *
+     * Configure extra container bindings without overriding the package
+     * service provider. Leave empty to register the default shopping_cart.
+     */
+    'instances' => [
+        'shopping_cart' => [
+            'binding' => 'shopping_cart',
+            'instance_name' => 'shopping_cart',
+            'session_key' => '4yTlTDKu3oJOfzD',
+            'cart_class' => \Lalalili\ShoppingCart\Cart::class,
+            'storage' => null,
+            'storage_parameters' => [],
+            'events' => null,
+            'events_parameters' => [],
+        ],
+    ],
 ];

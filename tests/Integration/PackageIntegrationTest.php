@@ -41,6 +41,19 @@ class PackageIntegrationTest extends TestCase
         $this->assertStringContainsString('shopping_cart.php', (string) $to);
     }
 
+    public function test_provider_exposes_named_config_publish_path(): void
+    {
+        $paths = ServiceProvider::pathsToPublish(ShoppingCartServiceProvider::class, 'shopping-cart-config');
+
+        $this->assertNotEmpty($paths);
+
+        $from = array_key_first($paths);
+        $to = $from !== null ? $paths[$from] : null;
+
+        $this->assertStringContainsString('shopping_cart.php', (string) $from);
+        $this->assertStringContainsString('shopping_cart.php', (string) $to);
+    }
+
     public function test_facade_resolves_cart_instance_with_session_switching(): void
     {
         $cart = ShoppingCartFacade::session('integration-user');
