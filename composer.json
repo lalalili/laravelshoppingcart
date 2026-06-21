@@ -1,7 +1,6 @@
 {
     "name": "lalalili/laravelshoppingcart",
     "description": "Shopping cart package for Laravel 11/12/13 with PHP 8.3+ support.",
-    "version": "14.0.1",
     "type": "library",
     "keywords": [
         "laravel",

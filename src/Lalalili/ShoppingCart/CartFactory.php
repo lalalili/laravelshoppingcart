@@ -27,8 +27,28 @@ class CartFactory
             $this->resolveEvents($config['events'] ?? null, $config['events_parameters'] ?? []),
             $this->resolveString($config['instance_name'] ?? null, 'shopping_cart'),
             $this->resolveString($config['session_key'] ?? null, '4yTlTDKu3oJOfzD'),
-            $config,
+            $this->cartConfig($config),
         );
+    }
+
+    /**
+     * Remove factory-control keys so resolved objects (storage/events) never
+     * pollute the cart's persisted config and break serialization.
+     *
+     * @param CartConfig $config
+     * @return CartConfig
+     */
+    private function cartConfig(array $config): array
+    {
+        unset(
+            $config['cart_class'],
+            $config['storage'],
+            $config['storage_parameters'],
+            $config['events'],
+            $config['events_parameters'],
+        );
+
+        return $config;
     }
 
     private function resolveStorage(mixed $storageClass, mixed $parameters = []): mixed
