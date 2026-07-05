@@ -4,6 +4,13 @@ All notable changes to `lalalili/laravelshoppingcart` are documented in this fil
 
 This package is a Lalalili fork of Crinsane/LaravelShoppingcart (namespace `Lalalili\ShoppingCart`).
 
+## [14.1.0] - 2026-07-05
+
+### Changed
+
+- 移除受安全公告封鎖的 Laravel 11 支援，將相依基線對齊為 `illuminate/* ^12.0|^13.0`（PHP `^8.3`）。仍在 Laravel 11 的 host 需先升級框架後方可更新本套件；執行期行為不變。
+- 對齊 CI 測試矩陣，移除 Laravel 11 分支。
+
 ## [14.0.2] - 2026-06-21
 
 ### Fixed
