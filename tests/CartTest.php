@@ -825,6 +825,29 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->assertCount(4, $cart->getContent());
     }
 
+    public function test_batch_tolerates_version_write_failure_on_legacy_storage()
+    {
+        // 模擬 legacy host storage:只接受 cart payload,int(version)寫入會 TypeError
+        $storage = new class () extends SessionMock {
+            public function put($key, $value)
+            {
+                if (is_int($value)) {
+                    throw new TypeError('legacy storage only accepts cart payloads');
+                }
+                parent::put($key, $value);
+            }
+        };
+
+        $cart = new Cart($storage, $this->events(), 'shopping', 'LEGACYBATCHKEY', require(__DIR__ . '/helpers/configMock.php'));
+
+        $cart->batch(function (Cart $cart): void {
+            $cart->add(1, 'Item 1', 100, 1, array());
+            $cart->add(2, 'Item 2', 200, 1, array());
+        });
+
+        $this->assertCount(2, $cart->getContent());
+    }
+
     public function test_batch_flushes_applied_changes_when_callback_throws()
     {
         $cart = new Cart(new SessionMock(), $this->events(), 'shopping', 'BATCHTHROWKEY', require(__DIR__ . '/helpers/configMock.php'));

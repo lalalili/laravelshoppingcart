@@ -654,7 +654,8 @@ class Cart
             return $callback($this);
         } finally {
             $this->storageDriver = $original;
-            $buffered->flush();
+            // version key 寫入失敗可容忍:與 touchCartVersion 的 try/catch 語意一致
+            $buffered->flush([$this->sessionKeyCartVersion]);
         }
     }
 

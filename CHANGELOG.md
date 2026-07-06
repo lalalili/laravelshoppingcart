@@ -4,6 +4,14 @@ All notable changes to `lalalili/laravelshoppingcart` are documented in this fil
 
 This package is a Lalalili fork of Crinsane/LaravelShoppingcart (namespace `Lalalili\ShoppingCart`).
 
+## [14.4.1] - 2026-07-06
+
+### Fixed
+
+- `Cart::batch()` flush 時,cart version key 的寫入失敗改為容忍(與非批次時
+  `touchCartVersion` 的 try/catch 語意一致),修正 legacy host storage(只接受
+  cart payload)在批次結束時拋 TypeError 的問題。
+
 ## [14.4.0] - 2026-07-06
 
 ### Added

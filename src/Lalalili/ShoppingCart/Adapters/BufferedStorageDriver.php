@@ -38,10 +38,21 @@ final class BufferedStorageDriver implements StorageDriverInterface
         $this->buffer[$key] = $value;
     }
 
-    public function flush(): void
+    /**
+     * @param list<string> $toleratedKeys 寫入失敗可容忍的 key(例:cart version;
+     *                                    legacy storage adapter 只接受 cart payload,
+     *                                    與非批次時 touchCartVersion 的 try/catch 語意一致)
+     */
+    public function flush(array $toleratedKeys = []): void
     {
         foreach ($this->buffer as $key => $value) {
-            $this->inner->put($key, $value);
+            try {
+                $this->inner->put($key, $value);
+            } catch (\Throwable $exception) {
+                if (! in_array($key, $toleratedKeys, true)) {
+                    throw $exception;
+                }
+            }
         }
 
         $this->buffer = [];
