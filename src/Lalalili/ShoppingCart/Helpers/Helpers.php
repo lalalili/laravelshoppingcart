@@ -124,6 +124,7 @@ class Helpers
 
     /**
      * @param mixed $rule false|null|int|array{precision?: int|numeric-string, mode?: int|string}
+     *                    mode 額外支援 'floor' / 'ceil'(依 precision 位數無條件捨去/進位)
      */
     public static function roundValue(float|int $value, mixed $rule): float|int
     {
@@ -138,7 +139,16 @@ class Helpers
             $precision = $rule;
         } elseif (is_array($rule)) {
             $precision = self::toInt($rule['precision'] ?? 0);
-            $mode = self::resolveRoundingMode($rule['mode'] ?? PHP_ROUND_HALF_UP);
+            $rawMode = $rule['mode'] ?? PHP_ROUND_HALF_UP;
+
+            if ($rawMode === 'floor' || $rawMode === 'ceil') {
+                $factor = 10 ** $precision;
+                $scaled = (float) $value * $factor;
+
+                return ($rawMode === 'floor' ? floor($scaled) : ceil($scaled)) / $factor;
+            }
+
+            $mode = self::resolveRoundingMode($rawMode);
         } else {
             return $value;
         }

@@ -767,6 +767,57 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->assertEquals(12, $this->cart->getTotalQuantity(), 'Cart\'s quantity should be 4.');
     }
 
+    public function test_round_value_supports_floor_and_ceil_modes()
+    {
+        $floorRule = array('precision' => 0, 'mode' => 'floor');
+        $ceilRule = array('precision' => 0, 'mode' => 'ceil');
+
+        $this->assertSame(299.0, \Lalalili\ShoppingCart\Helpers\Helpers::roundValue(299.7, $floorRule));
+        $this->assertSame(300.0, \Lalalili\ShoppingCart\Helpers\Helpers::roundValue(299.2, $ceilRule));
+        $this->assertSame(299.9, \Lalalili\ShoppingCart\Helpers\Helpers::roundValue(299.97, array('precision' => 1, 'mode' => 'floor')));
+        // 既有 round mode 不受影響
+        $this->assertSame(300.0, \Lalalili\ShoppingCart\Helpers\Helpers::roundValue(299.7, array('precision' => 0, 'mode' => 'half_up')));
+    }
+
+    public function test_get_total_as_int_rounds_instead_of_truncating()
+    {
+        $this->cart->add(455, 'Sample Item', 100, 1, array());
+
+        // -12.5% → total 87.5:round 收斂為 88,截斷式 (int) 會得到 87
+        $this->cart->condition(new CartCondition(array(
+            'name'   => 'promo',
+            'type'   => 'promo',
+            'target' => 'total',
+            'value'  => '-12.5%',
+        )));
+
+        $this->assertSame(87.5, (float) $this->cart->getTotal(false));
+        $this->assertSame(88, $this->cart->getTotalAsInt());
+        $this->assertSame(100, $this->cart->getSubTotalAsInt());
+    }
+
+    public function test_item_price_rounding_rule_supports_floor_mode()
+    {
+        $config = require(__DIR__ . '/helpers/configMock.php');
+        $config['rounding'] = array(
+            'item_price' => array('precision' => 0, 'mode' => 'floor'),
+        );
+
+        $cart = new Cart(new SessionMock(), $this->events(), 'shopping', 'FLOORSESSIONKEY', $config);
+
+        $cart->add(456, 'Floor Item', 333, 3, array());
+        $cart->addItemCondition(456, new CartCondition(array(
+            'name'   => 'ten-percent-off',
+            'type'   => 'promo',
+            'target' => 'item',
+            'value'  => '-10%',
+        )));
+
+        // 333 × 0.9 = 299.7 → floor 299;299 × 3 = 897
+        $this->assertSame(299.0, (float) $cart->getContent()->get(456)->getPriceWithConditions(false));
+        $this->assertSame(897.0, (float) $cart->getContent()->get(456)->getPriceSumWithConditions(false));
+    }
+
     private function events(): mixed
     {
         $events = m::mock('Illuminate\Contracts\Events\Dispatcher');

@@ -612,6 +612,24 @@ class Cart
         );
     }
 
+    /**
+     * 以整數幣別(如 TWD)取用小計:對未格式化小計做 (int) round 收斂,
+     * 供 host 取代不安全的 (int) 截斷式轉型。
+     */
+    public function getSubTotalAsInt(): int
+    {
+        return (int) round((float) $this->getSubTotal(false));
+    }
+
+    /**
+     * 以整數幣別(如 TWD)取用總計:對未格式化總計做 (int) round 收斂,
+     * 供 host 取代不安全的 (int) 截斷式轉型。
+     */
+    public function getTotalAsInt(): int
+    {
+        return (int) round((float) $this->getTotal(false));
+    }
+
     public function getTotalQuantity(): int
     {
         return $this->totalsService->totalQuantity($this->getContent());

@@ -4,6 +4,15 @@ All notable changes to `lalalili/laravelshoppingcart` are documented in this fil
 
 This package is a Lalalili fork of Crinsane/LaravelShoppingcart (namespace `Lalalili\ShoppingCart`).
 
+## [14.2.0] - 2026-07-06
+
+### Added
+
+- `Helpers::roundValue()` 的 rounding rule `mode` 新增 `'floor'` / `'ceil'`(依 `precision` 位數無條件捨去/進位),
+  供 host 以 config 宣告單件折後價 floor 收斂等政策。
+- `Cart::getSubTotalAsInt()` / `Cart::getTotalAsInt()`:以 `(int) round` 收斂未格式化金額,
+  供整數幣別(TWD)host 取代不安全的 `(int)` 截斷式轉型。
+
 ## [14.1.1] - 2026-07-06
 
 ### Fixed
