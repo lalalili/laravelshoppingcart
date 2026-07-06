@@ -67,7 +67,7 @@ class CartSnapshotService
 
         foreach ($content as $item) {
             $itemExplanation = $this->explainItem($item, $formatted, $config);
-            $subtotalWithoutConditions += (float) $item->getPriceSum();
+            $subtotalWithoutConditions += (float) $item->getPriceSum(false);
             $lineSubtotals[] = $itemExplanation;
         }
 

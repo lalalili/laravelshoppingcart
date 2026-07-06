@@ -30,14 +30,17 @@ class ItemCollection extends Collection
         $this->config = $config;
     }
 
-    public function getPriceSum(): float|int|string
+    /**
+     * @param bool|null $formatted null 時依 config format_numbers 決定;false 保證回傳未格式化數值
+     */
+    public function getPriceSum(?bool $formatted = null): float|int|string
     {
         $price = Helpers::toFloat($this->get('price'));
         $quantity = Helpers::toFloat($this->get('quantity'));
 
         return Helpers::formatValue(
             $price * $quantity,
-            (bool) ($this->config['format_numbers'] ?? false),
+            $formatted ?? (bool) ($this->config['format_numbers'] ?? false),
             $this->config
         );
     }

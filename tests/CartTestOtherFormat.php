@@ -74,6 +74,22 @@ class CartTestOtherFormat extends PHPUnit\Framework\TestCase
         $this->assertEquals('119,500', $this->cart->getSubTotal(), 'Cart should have sub total of 119,500');
     }
 
+    public function test_sub_total_without_conditions_is_not_mangled_by_thousands_separator()
+    {
+        // 回歸:getPriceSum() 未帶 formatted=false 時會回傳含千分位字串,
+        // (float) 轉型後金額被截斷(例:"3.000" → 3.0)。
+        $this->cart->add(array(
+            'id'         => 456,
+            'name'       => 'Sample Item 1',
+            'price'      => 1500,
+            'quantity'   => 2,
+            'attributes' => array()
+        ));
+
+        $this->assertSame(3000.0, $this->cart->getSubTotalWithoutConditions(false));
+        $this->assertSame(3000.0, (float) $this->cart->getContent()->get(456)->getPriceSum(false));
+    }
+
     public function test_sub_total_when_item_quantity_is_updated()
     {
         $items = array(

@@ -4,6 +4,14 @@ All notable changes to `lalalili/laravelshoppingcart` are documented in this fil
 
 This package is a Lalalili fork of Crinsane/LaravelShoppingcart (namespace `Lalalili\ShoppingCart`).
 
+## [14.1.1] - 2026-07-06
+
+### Fixed
+
+- 修正 `format_numbers=true` 且千分位分隔符啟用時,`getSubTotalWithoutConditions()` 與 cart snapshot 的
+  `subtotal_without_conditions` 金額被截斷的問題(`(float) "2,000"` → `2.0`)。`ItemCollection::getPriceSum()`
+  新增選用參數 `?bool $formatted = null`(預設維持原 config 行為,向後相容),內部加總改以未格式化數值計算。
+
 ## [14.1.0] - 2026-07-05
 
 ### Changed

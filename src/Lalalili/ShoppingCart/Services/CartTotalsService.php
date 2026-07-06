@@ -21,7 +21,7 @@ class CartTotalsService
     public function subTotalWithoutConditions(CartCollection $cart, bool $formatted, array $config): float|int|string
     {
         $sum = $cart->sum(static function (ItemCollection $item): float {
-            return (float) $item->getPriceSum();
+            return (float) $item->getPriceSum(false);
         });
 
         $sum = Helpers::roundValue((float) $sum, Helpers::roundingRule($config, 'subtotal_without_conditions'));
