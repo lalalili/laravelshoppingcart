@@ -55,6 +55,11 @@ return [
      *
      * Each rule may be null, an integer precision, or:
      * ['precision' => 0, 'mode' => 'half_up']
+     * Modes: half_up | half_down | half_even | half_odd | floor | ceil
+     *
+     * per_condition_step: when true, each subtotal/total condition step is
+     * converged immediately with the matching level rule instead of only once
+     * at the end (recommended for integer currencies such as TWD).
      */
     'rounding' => [
         'item_price' => null,
@@ -63,6 +68,7 @@ return [
         'subtotal_without_conditions' => null,
         'subtotal' => null,
         'total' => null,
+        'per_condition_step' => false,
     ],
 
     /*

@@ -796,6 +796,40 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->assertSame(100, $this->cart->getSubTotalAsInt());
     }
 
+    public function test_per_condition_step_rounding_converges_each_step()
+    {
+        $config = require(__DIR__ . '/helpers/configMock.php');
+        $config['rounding'] = array(
+            'total'               => array('precision' => 0, 'mode' => 'half_up'),
+            'per_condition_step'  => true,
+        );
+
+        $cart = new Cart(new SessionMock(), $this->events(), 'shopping', 'PERSTEPKEY', $config);
+        $cart->add(1, 'Item', 1000, 1, array());
+        // -0.14% → 998.6 → per-step round 999;再 -50% → 499.5 → round 500
+        $cart->condition(new CartCondition(array(
+            'name' => 'p1', 'type' => 'promo', 'target' => 'total', 'value' => '-0.14%', 'order' => 1,
+        )));
+        $cart->condition(new CartCondition(array(
+            'name' => 'p2', 'type' => 'promo', 'target' => 'total', 'value' => '-50%', 'order' => 2,
+        )));
+
+        $this->assertSame(500.0, (float) $cart->getTotal(false));
+
+        // 對照:未啟用 per_condition_step 時僅最後收斂一次 → 998.6 × 0.5 = 499.3 → 499
+        $config['rounding']['per_condition_step'] = false;
+        $cartFinalOnly = new Cart(new SessionMock(), $this->events(), 'shopping', 'FINALONLYKEY', $config);
+        $cartFinalOnly->add(1, 'Item', 1000, 1, array());
+        $cartFinalOnly->condition(new CartCondition(array(
+            'name' => 'p1', 'type' => 'promo', 'target' => 'total', 'value' => '-0.14%', 'order' => 1,
+        )));
+        $cartFinalOnly->condition(new CartCondition(array(
+            'name' => 'p2', 'type' => 'promo', 'target' => 'total', 'value' => '-50%', 'order' => 2,
+        )));
+
+        $this->assertSame(499.0, (float) $cartFinalOnly->getTotal(false));
+    }
+
     public function test_item_price_rounding_rule_supports_floor_mode()
     {
         $config = require(__DIR__ . '/helpers/configMock.php');

@@ -54,10 +54,11 @@ class CartTotalsService
 
         $newTotal = 0.00;
         $process = 0;
+        $stepRule = self::perStepRule($config, 'subtotal');
 
-        $subtotalConditions->each(static function (CartCondition $condition) use ($sum, &$newTotal, &$process): void {
+        $subtotalConditions->each(static function (CartCondition $condition) use ($sum, $stepRule, &$newTotal, &$process): void {
             $toBeCalculated = ($process > 0) ? $newTotal : (float) $sum;
-            $newTotal = $condition->applyCondition($toBeCalculated);
+            $newTotal = Helpers::roundValue((float) $condition->applyCondition($toBeCalculated), $stepRule);
             $process++;
         });
 
@@ -87,16 +88,32 @@ class CartTotalsService
 
         $newTotal = 0.00;
         $process = 0;
+        $stepRule = self::perStepRule($config, 'total');
 
-        $totalConditions->each(static function (CartCondition $condition) use ($subTotal, &$newTotal, &$process): void {
+        $totalConditions->each(static function (CartCondition $condition) use ($subTotal, $stepRule, &$newTotal, &$process): void {
             $toBeCalculated = ($process > 0) ? $newTotal : $subTotal;
-            $newTotal = $condition->applyCondition($toBeCalculated);
+            $newTotal = Helpers::roundValue((float) $condition->applyCondition($toBeCalculated), $stepRule);
             $process++;
         });
 
         $newTotal = Helpers::roundValue($newTotal, Helpers::roundingRule($config, 'total'));
 
         return Helpers::formatValue($newTotal, $formatted, $config);
+    }
+
+    /**
+     * 啟用 `rounding.per_condition_step` 時,每一條 condition 套用後立即以
+     * 對應層級(subtotal/total)的 rounding rule 收斂;否則僅在最後收斂一次。
+     *
+     * @param CartConfig $config
+     */
+    private static function perStepRule(array $config, string $levelKey): mixed
+    {
+        if (! (bool) (Helpers::roundingRule($config, 'per_condition_step') ?? false)) {
+            return null;
+        }
+
+        return Helpers::roundingRule($config, $levelKey);
     }
 
     public function totalQuantity(CartCollection $items): int

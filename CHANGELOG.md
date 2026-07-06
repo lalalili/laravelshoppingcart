@@ -4,6 +4,15 @@ All notable changes to `lalalili/laravelshoppingcart` are documented in this fil
 
 This package is a Lalalili fork of Crinsane/LaravelShoppingcart (namespace `Lalalili\ShoppingCart`).
 
+## [14.3.0] - 2026-07-06
+
+### Added
+
+- `rounding.per_condition_step`(預設 `false`):啟用後 subtotal/total 每一條 condition 套用完
+  立即以對應層級 rounding rule 收斂(整數幣別建議開啟),取代 host 以子類覆寫
+  `getSubTotal()/getTotal()` 實作逐步收斂的需求;host 子類覆寫可移除,同時取回
+  base `Cart` 的 totalsCache 與 pipeline 去重效益。
+
 ## [14.2.0] - 2026-07-06
 
 ### Added
