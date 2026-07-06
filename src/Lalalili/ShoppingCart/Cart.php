@@ -630,6 +630,34 @@ class Cart
         return (int) round((float) $this->getTotal(false));
     }
 
+    /**
+     * 批次操作:callback 內所有寫入先落在記憶體緩衝,結束時每個 storage key
+     * 只寫一次(N 次 remove/add 的整包序列化 → 1 次)。純粹是寫入合併
+     * 最佳化:callback 拋出例外時,已執行的變更仍會落盤,與非批次時
+     * 逐筆立即寫入的行為一致。巢狀呼叫直接沿用外層緩衝。
+     *
+     * @template TReturn
+     * @param callable(static): TReturn $callback
+     * @return TReturn
+     */
+    public function batch(callable $callback): mixed
+    {
+        if ($this->storageDriver instanceof Adapters\BufferedStorageDriver) {
+            return $callback($this);
+        }
+
+        $original = $this->storageDriver;
+        $buffered = new Adapters\BufferedStorageDriver($original);
+        $this->storageDriver = $buffered;
+
+        try {
+            return $callback($this);
+        } finally {
+            $this->storageDriver = $original;
+            $buffered->flush();
+        }
+    }
+
     public function getTotalQuantity(): int
     {
         return $this->totalsService->totalQuantity($this->getContent());

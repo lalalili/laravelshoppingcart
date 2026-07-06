@@ -796,6 +796,56 @@ class CartTest extends PHPUnit\Framework\TestCase
         $this->assertSame(100, $this->cart->getSubTotalAsInt());
     }
 
+    public function test_batch_coalesces_storage_writes_per_key()
+    {
+        $storage = new class () extends SessionMock {
+            public $putCounts = array();
+
+            public function put($key, $value)
+            {
+                $this->putCounts[$key] = ($this->putCounts[$key] ?? 0) + 1;
+                parent::put($key, $value);
+            }
+        };
+
+        $cart = new Cart($storage, $this->events(), 'shopping', 'BATCHKEY', require(__DIR__ . '/helpers/configMock.php'));
+
+        $cart->batch(function (Cart $cart): void {
+            for ($i = 1; $i <= 5; $i++) {
+                $cart->add($i, "Item {$i}", 100, 1, array());
+            }
+            $cart->remove(3);
+        });
+
+        // 6 次寫入操作(5 add + 1 remove)coalesce 後,每個 storage key 只落盤一次
+        $this->assertNotEmpty($storage->putCounts);
+        foreach ($storage->putCounts as $key => $count) {
+            $this->assertSame(1, $count, "Storage key {$key} should be written exactly once by batch flush.");
+        }
+        $this->assertCount(4, $cart->getContent());
+    }
+
+    public function test_batch_flushes_applied_changes_when_callback_throws()
+    {
+        $cart = new Cart(new SessionMock(), $this->events(), 'shopping', 'BATCHTHROWKEY', require(__DIR__ . '/helpers/configMock.php'));
+        $cart->add(1, 'Kept Item', 100, 1, array());
+
+        try {
+            $cart->batch(function (Cart $cart): void {
+                $cart->add(2, 'Applied Before Throw', 200, 1, array());
+
+                throw new RuntimeException('abort batch');
+            });
+            $this->fail('Expected exception was not thrown.');
+        } catch (RuntimeException $e) {
+            // expected
+        }
+
+        // 與非批次語意一致:例外前已執行的變更仍生效
+        $this->assertCount(2, $cart->getContent());
+        $this->assertTrue($cart->getContent()->has(2));
+    }
+
     public function test_per_condition_step_rounding_converges_each_step()
     {
         $config = require(__DIR__ . '/helpers/configMock.php');

@@ -31,6 +31,7 @@ class ApiCompatibilityTest extends PHPUnit\Framework\TestCase
             'clearItemConditions',
             'clearCartConditions',
             'getSubTotalWithoutConditions',
+            'batch',
             'getSubTotal',
             'getSubTotalAsInt',
             'getTotal',

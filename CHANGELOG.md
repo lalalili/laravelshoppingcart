@@ -4,6 +4,14 @@ All notable changes to `lalalili/laravelshoppingcart` are documented in this fil
 
 This package is a Lalalili fork of Crinsane/LaravelShoppingcart (namespace `Lalalili\ShoppingCart`).
 
+## [14.4.0] - 2026-07-06
+
+### Added
+
+- `Cart::batch(callable)`:批次寫入合併。callback 內所有 storage 寫入先落記憶體緩衝,
+  結束時每個 key 只寫一次(N 次 remove/add 的整包序列化 → 1 次)。例外時已執行的
+  變更仍落盤(與非批次逐筆寫入語意一致)。新增 `Adapters\BufferedStorageDriver`。
+
 ## [14.3.0] - 2026-07-06
 
 ### Added
