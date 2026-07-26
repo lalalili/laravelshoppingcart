@@ -42,8 +42,6 @@
             "Lalalili\\ShoppingCart\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
     "extra": {
         "laravel": {
             "providers": [
