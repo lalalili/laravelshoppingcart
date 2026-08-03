@@ -17,10 +17,10 @@ class AddDiscountPipeline implements CartPipelineInterface
     {
         if ($cart->getCondition('pipeline-discount') === null) {
             $cart->condition(new CartCondition([
-                'name' => 'pipeline-discount',
-                'type' => 'discount',
-                'target' => 'total',
-                'value' => '-10',
+                'name'       => 'pipeline-discount',
+                'type'       => 'discount',
+                'target'     => 'total',
+                'value'      => '-10',
                 'attributes' => [
                     'channel' => $context->get('channel'),
                 ],
