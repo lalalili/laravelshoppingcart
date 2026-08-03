@@ -68,9 +68,9 @@ class ShoppingCartServiceProvider extends ServiceProvider
         if (! is_array($instances) || $instances === []) {
             return [
                 'shopping_cart' => array_replace($config, [
-                    'binding' => 'shopping_cart',
+                    'binding'       => 'shopping_cart',
                     'instance_name' => 'shopping_cart',
-                    'session_key' => '4yTlTDKu3oJOfzD',
+                    'session_key'   => '4yTlTDKu3oJOfzD',
                 ]),
             ];
         }
@@ -93,18 +93,18 @@ class ShoppingCartServiceProvider extends ServiceProvider
                 $config,
                 $instanceConfig,
                 [
-                    'binding' => $binding,
+                    'binding'       => $binding,
                     'instance_name' => $instanceConfig['instance_name'] ?? $binding,
-                    'session_key' => $instanceConfig['session_key'] ?? '4yTlTDKu3oJOfzD',
+                    'session_key'   => $instanceConfig['session_key'] ?? '4yTlTDKu3oJOfzD',
                 ],
             );
         }
 
         return $resolved === [] ? [
             'shopping_cart' => array_replace($config, [
-                'binding' => 'shopping_cart',
+                'binding'       => 'shopping_cart',
                 'instance_name' => 'shopping_cart',
-                'session_key' => '4yTlTDKu3oJOfzD',
+                'session_key'   => '4yTlTDKu3oJOfzD',
             ]),
         ] : $resolved;
     }

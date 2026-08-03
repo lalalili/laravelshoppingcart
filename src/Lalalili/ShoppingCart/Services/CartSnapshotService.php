@@ -37,17 +37,17 @@ class CartSnapshotService
         $subtotal = (float) $totalsService->subTotal($content, $conditions, false, $config);
 
         return [
-            'instance' => $instanceName,
-            'session_key' => $sessionKey,
-            'version' => $version,
-            'hash' => $hash,
-            'context' => $context->toArray(),
-            'items' => $this->items($content, $formatted),
-            'conditions' => $this->conditions($conditions),
+            'instance'                    => $instanceName,
+            'session_key'                 => $sessionKey,
+            'version'                     => $version,
+            'hash'                        => $hash,
+            'context'                     => $context->toArray(),
+            'items'                       => $this->items($content, $formatted),
+            'conditions'                  => $this->conditions($conditions),
             'subtotal_without_conditions' => $totalsService->subTotalWithoutConditions($content, $formatted, $config),
-            'subtotal' => $this->format($subtotal, $formatted, $config),
-            'total' => $totalsService->total($conditions, $subtotal, $formatted, $config),
-            'quantity' => $totalsService->totalQuantity($content),
+            'subtotal'                    => $this->format($subtotal, $formatted, $config),
+            'total'                       => $totalsService->total($conditions, $subtotal, $formatted, $config),
+            'quantity'                    => $totalsService->totalQuantity($content),
         ];
     }
 
@@ -96,17 +96,17 @@ class CartSnapshotService
 
         return [
             'context' => $context->toArray(),
-            'items' => array_map(static function (array $item): array {
+            'items'   => array_map(static function (array $item): array {
                 unset($item['line_subtotal_raw']);
 
                 return $item;
             }, $lineSubtotals),
             'subtotal_without_conditions' => $this->format($subtotalWithoutConditions, $formatted, $config),
-            'subtotal_base' => $this->format($subtotalBase, $formatted, $config),
-            'subtotal_conditions' => $subtotalSteps,
-            'subtotal' => $this->format($subtotal, $formatted, $config),
-            'total_conditions' => $totalSteps,
-            'total' => $this->format($total, $formatted, $config),
+            'subtotal_base'               => $this->format($subtotalBase, $formatted, $config),
+            'subtotal_conditions'         => $subtotalSteps,
+            'subtotal'                    => $this->format($subtotal, $formatted, $config),
+            'total_conditions'            => $totalSteps,
+            'total'                       => $this->format($total, $formatted, $config),
         ];
     }
 
@@ -120,9 +120,9 @@ class CartSnapshotService
         int|string|null $version
     ): array {
         return [
-            'version' => $version,
-            'context' => $context->toArray(),
-            'items' => $this->items($content, false),
+            'version'    => $version,
+            'context'    => $context->toArray(),
+            'items'      => $this->items($content, false),
             'conditions' => $this->conditions($conditions),
         ];
     }
@@ -141,15 +141,15 @@ class CartSnapshotService
             }
 
             $items[] = [
-                'id' => $item->get('id'),
-                'name' => $item->get('name'),
-                'price' => $formatted ? $item->getPriceWithConditions(true) : $item->get('price'),
-                'quantity' => $item->get('quantity'),
-                'attributes' => is_array($attributes) ? $attributes : [],
-                'conditions' => $this->itemConditions($item),
-                'associatedModel' => $item->get('associatedModel'),
+                'id'                    => $item->get('id'),
+                'name'                  => $item->get('name'),
+                'price'                 => $formatted ? $item->getPriceWithConditions(true) : $item->get('price'),
+                'quantity'              => $item->get('quantity'),
+                'attributes'            => is_array($attributes) ? $attributes : [],
+                'conditions'            => $this->itemConditions($item),
+                'associatedModel'       => $item->get('associatedModel'),
                 'price_with_conditions' => $item->getPriceWithConditions($formatted),
-                'line_subtotal' => $item->getPriceSumWithConditions($formatted),
+                'line_subtotal'         => $item->getPriceSumWithConditions($formatted),
             ];
         }
 
@@ -179,14 +179,14 @@ class CartSnapshotService
         );
 
         return [
-            'id' => $item->get('id'),
-            'name' => $item->get('name'),
-            'price' => $this->format($price, $formatted, $config),
-            'quantity' => $item->get('quantity'),
-            'condition_steps' => $steps,
+            'id'                    => $item->get('id'),
+            'name'                  => $item->get('name'),
+            'price'                 => $this->format($price, $formatted, $config),
+            'quantity'              => $item->get('quantity'),
+            'condition_steps'       => $steps,
             'price_with_conditions' => $this->format($current, $formatted, $config),
-            'line_subtotal' => $this->format($lineSubtotal, $formatted, $config),
-            'line_subtotal_raw' => $lineSubtotal,
+            'line_subtotal'         => $this->format($lineSubtotal, $formatted, $config),
+            'line_subtotal_raw'     => $lineSubtotal,
         ];
     }
 
@@ -254,11 +254,11 @@ class CartSnapshotService
     private function condition(CartCondition $condition): array
     {
         return [
-            'name' => $condition->getName(),
-            'type' => $condition->getType(),
-            'value' => $condition->getValue(),
-            'target' => $condition->getTarget(),
-            'order' => $condition->getOrder(),
+            'name'       => $condition->getName(),
+            'type'       => $condition->getType(),
+            'value'      => $condition->getValue(),
+            'target'     => $condition->getTarget(),
+            'order'      => $condition->getOrder(),
             'attributes' => $condition->getAttributes(),
         ];
     }
@@ -277,13 +277,13 @@ class CartSnapshotService
         $calculatedValue = $condition->getCalculatedValue($before);
 
         return [
-            'condition' => $this->condition($condition),
-            'before' => $this->format($before, $formatted, $config),
-            'before_raw' => $before,
-            'calculated_value' => $this->format($calculatedValue, $formatted, $config),
+            'condition'            => $this->condition($condition),
+            'before'               => $this->format($before, $formatted, $config),
+            'before_raw'           => $before,
+            'calculated_value'     => $this->format($calculatedValue, $formatted, $config),
             'calculated_value_raw' => $calculatedValue,
-            'after' => $this->format($after, $formatted, $config),
-            'after_raw' => $after,
+            'after'                => $this->format($after, $formatted, $config),
+            'after_raw'            => $after,
         ];
     }
 

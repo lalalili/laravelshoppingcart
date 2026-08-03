@@ -73,7 +73,7 @@ final class CartPipelineResult implements Arrayable, JsonSerializable
     public function toArray(): array
     {
         return [
-            'changed' => $this->changed,
+            'changed'  => $this->changed,
             'warnings' => $this->warnings,
             'metadata' => $this->metadata,
         ];

@@ -35,11 +35,11 @@ class CartApiController
         }
 
         $validated = $request->validate([
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.id' => ['required'],
-            'items.*.name' => ['required', 'string'],
-            'items.*.price' => ['required', 'numeric'],
-            'items.*.quantity' => ['required', 'numeric', 'min:0.1'],
+            'items'              => ['required', 'array', 'min:1'],
+            'items.*.id'         => ['required'],
+            'items.*.name'       => ['required', 'string'],
+            'items.*.price'      => ['required', 'numeric'],
+            'items.*.quantity'   => ['required', 'numeric', 'min:0.1'],
             'items.*.attributes' => ['sometimes', 'array'],
         ]);
 
@@ -56,9 +56,9 @@ class CartApiController
         }
 
         $this->cart()->update($id, $request->validate([
-            'name' => ['sometimes', 'string'],
-            'price' => ['sometimes', 'numeric'],
-            'quantity' => ['sometimes'],
+            'name'       => ['sometimes', 'string'],
+            'price'      => ['sometimes', 'numeric'],
+            'quantity'   => ['sometimes'],
             'attributes' => ['sometimes', 'array'],
         ]));
 
@@ -83,7 +83,7 @@ class CartApiController
         }
 
         $validated = $request->validate([
-            'ids' => ['required', 'array', 'min:1'],
+            'ids'   => ['required', 'array', 'min:1'],
             'ids.*' => ['required'],
         ]);
 
@@ -100,11 +100,11 @@ class CartApiController
         }
 
         $this->cart()->condition(new CartCondition($request->validate([
-            'name' => ['required', 'string'],
-            'type' => ['required', 'string'],
-            'value' => ['required'],
-            'target' => ['sometimes', 'string'],
-            'order' => ['sometimes', 'integer'],
+            'name'       => ['required', 'string'],
+            'type'       => ['required', 'string'],
+            'value'      => ['required'],
+            'target'     => ['sometimes', 'string'],
+            'order'      => ['sometimes', 'integer'],
             'attributes' => ['sometimes', 'array'],
         ])));
 
@@ -148,10 +148,10 @@ class CartApiController
     private function itemRules(): array
     {
         return [
-            'id' => ['required'],
-            'name' => ['required', 'string'],
-            'price' => ['required', 'numeric'],
-            'quantity' => ['required', 'numeric', 'min:0.1'],
+            'id'         => ['required'],
+            'name'       => ['required', 'string'],
+            'price'      => ['required', 'numeric'],
+            'quantity'   => ['required', 'numeric', 'min:0.1'],
             'attributes' => ['sometimes', 'array'],
         ];
     }
@@ -163,7 +163,7 @@ class CartApiController
         if ($expectedHash === null) {
             if ((bool) config('shopping_cart.api.require_hash', false)) {
                 return response()->json([
-                    'message' => 'Cart hash is required for this operation.',
+                    'message'      => 'Cart hash is required for this operation.',
                     'current_hash' => $this->cart()->hash(),
                 ], 428);
             }
@@ -175,7 +175,7 @@ class CartApiController
             $this->cart()->assertHash($expectedHash);
         } catch (StaleCartException) {
             return response()->json([
-                'message' => 'The cart has changed since the supplied hash was generated.',
+                'message'      => 'The cart has changed since the supplied hash was generated.',
                 'current_hash' => $this->cart()->hash(),
             ], 409);
         }

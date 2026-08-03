@@ -53,9 +53,9 @@ function runScenario(int $itemCount): array
     $totalDurationMs = (hrtime(true) - $totalStart) / 1_000_000;
 
     return [
-        'add_ms' => round($addDurationMs, 2),
-        'update_ms' => round($updateDurationMs, 2),
-        'total_ms' => round($totalDurationMs, 2),
+        'add_ms'         => round($addDurationMs, 2),
+        'update_ms'      => round($updateDurationMs, 2),
+        'total_ms'       => round($totalDurationMs, 2),
         'peak_memory_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
     ];
 }

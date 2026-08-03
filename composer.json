@@ -26,6 +26,8 @@
         "illuminate/validation": "^12.0|^13.0"
     },
     "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.0",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^9.0|^10.0|^11.0",
         "pestphp/pest": "^5.0",
@@ -59,6 +61,7 @@
         "test:pest": "pest --colors=always",
         "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress",
         "analyse:max": "phpstan analyse src --level=max --no-progress",
+        "format": "pint",
         "bench": "php benchmarks/cart_benchmark.php",
         "coverage:check": "php tools/check_coverage.php build/clover.xml 85"
     },

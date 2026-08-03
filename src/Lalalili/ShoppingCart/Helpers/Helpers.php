@@ -165,8 +165,8 @@ class Helpers
             return match ($mode) {
                 PHP_ROUND_HALF_DOWN => PHP_ROUND_HALF_DOWN,
                 PHP_ROUND_HALF_EVEN => PHP_ROUND_HALF_EVEN,
-                PHP_ROUND_HALF_ODD => PHP_ROUND_HALF_ODD,
-                default => PHP_ROUND_HALF_UP,
+                PHP_ROUND_HALF_ODD  => PHP_ROUND_HALF_ODD,
+                default             => PHP_ROUND_HALF_UP,
             };
         }
 
@@ -174,8 +174,8 @@ class Helpers
             return match ($mode) {
                 'half_down' => PHP_ROUND_HALF_DOWN,
                 'half_even' => PHP_ROUND_HALF_EVEN,
-                'half_odd' => PHP_ROUND_HALF_ODD,
-                default => PHP_ROUND_HALF_UP,
+                'half_odd'  => PHP_ROUND_HALF_ODD,
+                default     => PHP_ROUND_HALF_UP,
             };
         }
 

@@ -62,13 +62,13 @@ return [
      * at the end (recommended for integer currencies such as TWD).
      */
     'rounding' => [
-        'item_price' => null,
-        'item_price_before_quantity' => null,
-        'line_subtotal' => null,
+        'item_price'                  => null,
+        'item_price_before_quantity'  => null,
+        'line_subtotal'               => null,
         'subtotal_without_conditions' => null,
-        'subtotal' => null,
-        'total' => null,
-        'per_condition_step' => false,
+        'subtotal'                    => null,
+        'total'                       => null,
+        'per_condition_step'          => false,
     ],
 
     /*
@@ -90,9 +90,9 @@ return [
      */
     'pipelines' => [
         'auto_run_before_totals' => true,
-        'before_totals' => [],
-        'after_totals' => [],
-        'before_checkout' => [],
+        'before_totals'          => [],
+        'after_totals'           => [],
+        'before_checkout'        => [],
     ],
 
     /*
@@ -101,10 +101,10 @@ return [
      * ---------------------------------------------------------------
      */
     'api' => [
-        'enabled' => false,
+        'enabled'      => false,
         'require_hash' => false,
-        'prefix' => 'cart',
-        'middleware' => [],
+        'prefix'       => 'cart',
+        'middleware'   => [],
     ],
 
     /*
@@ -117,14 +117,14 @@ return [
      */
     'instances' => [
         'shopping_cart' => [
-            'binding' => 'shopping_cart',
-            'instance_name' => 'shopping_cart',
-            'session_key' => '4yTlTDKu3oJOfzD',
-            'cart_class' => \Lalalili\ShoppingCart\Cart::class,
-            'storage' => null,
+            'binding'            => 'shopping_cart',
+            'instance_name'      => 'shopping_cart',
+            'session_key'        => '4yTlTDKu3oJOfzD',
+            'cart_class'         => \Lalalili\ShoppingCart\Cart::class,
+            'storage'            => null,
             'storage_parameters' => [],
-            'events' => null,
-            'events_parameters' => [],
+            'events'             => null,
+            'events_parameters'  => [],
         ],
     ],
 ];

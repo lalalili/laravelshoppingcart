@@ -131,9 +131,9 @@ class Cart
         /** @var CartConfig $resolvedConfig */
         $resolvedConfig = array_merge([
             'format_numbers' => false,
-            'decimals' => 0,
-            'dec_point' => '.',
-            'thousands_sep' => ',',
+            'decimals'       => 0,
+            'dec_point'      => '.',
+            'thousands_sep'  => ',',
         ], $config);
 
         $this->config = $resolvedConfig;
@@ -227,10 +227,10 @@ class Cart
 
         /** @var CartItemData $data */
         $data = [
-            'id' => $id,
-            'name' => Helpers::toString($name),
-            'price' => Helpers::normalizePrice($price),
-            'quantity' => Helpers::toFloat($quantity),
+            'id'         => $id,
+            'name'       => Helpers::toString($name),
+            'price'      => Helpers::normalizePrice($price),
+            'quantity'   => Helpers::toFloat($quantity),
             'attributes' => new ItemAttributeCollection(is_array($attributes) ? $attributes : []),
             'conditions' => $conditions instanceof CartCondition ? $conditions : (is_array($conditions) ? $conditions : []),
         ];
@@ -862,10 +862,10 @@ class Cart
     protected function validate(array $item): array
     {
         $rules = [
-            'id' => 'required',
-            'price' => 'required|numeric',
+            'id'       => 'required',
+            'price'    => 'required|numeric',
             'quantity' => 'required|numeric|min:0.1',
-            'name' => 'required',
+            'name'     => 'required',
         ];
 
         $validator = CartItemValidator::make($item, $rules);
@@ -1057,10 +1057,10 @@ class Cart
 
         /** @var CartItemData $data */
         $data = [
-            'id' => $id,
-            'name' => Helpers::toString($item['name'] ?? null),
-            'price' => Helpers::normalizePrice($item['price'] ?? null),
-            'quantity' => Helpers::toFloat($item['quantity'] ?? null),
+            'id'         => $id,
+            'name'       => Helpers::toString($item['name'] ?? null),
+            'price'      => Helpers::normalizePrice($item['price'] ?? null),
+            'quantity'   => Helpers::toFloat($item['quantity'] ?? null),
             'attributes' => new ItemAttributeCollection($attributes),
             'conditions' => $conditions,
         ];

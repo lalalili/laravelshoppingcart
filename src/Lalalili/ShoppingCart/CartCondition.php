@@ -43,13 +43,13 @@ class CartCondition
 
         /** @var ConditionData $conditionData */
         $conditionData = [
-            'name' => Helpers::toString($args['name'] ?? ''),
-            'type' => Helpers::toString($args['type'] ?? ''),
+            'name'  => Helpers::toString($args['name'] ?? ''),
+            'type'  => Helpers::toString($args['type'] ?? ''),
             'value' => is_int($rawValue) || is_float($rawValue) || is_string($rawValue)
                 ? $rawValue
                 : Helpers::toString($rawValue),
-            'target' => Helpers::toString($args['target'] ?? ''),
-            'order' => Helpers::toInt($args['order'] ?? 0),
+            'target'     => Helpers::toString($args['target'] ?? ''),
+            'order'      => Helpers::toInt($args['order'] ?? 0),
             'attributes' => isset($args['attributes']) && is_array($args['attributes']) ? $args['attributes'] : [],
         ];
 
@@ -168,8 +168,8 @@ class CartCondition
     protected function validate(array $args): void
     {
         $rules = [
-            'name' => 'required',
-            'type' => 'required',
+            'name'  => 'required',
+            'type'  => 'required',
             'value' => 'required',
         ];
 
